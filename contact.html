@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Food-Dynasty</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+
+   
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+
+   
+    <link href="css/restaurant.css" rel="stylesheet">
+
+    
+        <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    
+    <!-- Authentication Stylesheet -->
+    <link href="css/auth.css" rel="stylesheet">
+    
+    <style>
+        .contact-textarea {
+            height: 150px !important;
+        }
+        
+        .contact-info-icon {
+            width: 60px !important;
+            height: 60px !important;
+        }
+        
+        .footer-menu a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .footer-menu a:hover {
+            color: #FEA116;
+        }
+        
+        .contact-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(254, 161, 22, 0.2);
+        }
+        
+        .form-select:focus {
+            border-color: #FEA116;
+            box-shadow: 0 0 0 0.2rem rgba(254, 161, 22, 0.25);
+        }
+        
+        .contact-form .form-floating > .form-select {
+            padding-top: 1.625rem;
+            padding-bottom: 0.625rem;
+        }
+        
+        .contact-form .form-floating > label {
+            opacity: 0.65;
+        }
+        
+        .contact-form .form-floating > .form-select:focus ~ label,
+        .contact-form .form-floating > .form-select:not([value=""]) ~ label {
+            opacity: 0.65;
+            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        }
+        
+        .btn-success:hover {
+            background-color: #25d366 !important;
+            border-color: #25d366 !important;
+        }
+        
+        .whatsapp-redirect {
+            background: linear-gradient(45deg, #25d366, #128c7e);
+            color: white;
+            border: none;
+        }
+        
+        .contact-card .btn-success {
+            background-color: #25d366;
+            border-color: #25d366;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+       
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+       
+
+
+        
+        <div class="container-xxl position-relative p-0">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+                <a href="" class="navbar-brand p-0">
+                    <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Food-Dynasty</h1>
+                    
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav ms-auto py-0 pe-4">
+                        <a href="index.html" class="nav-item nav-link">Home</a>
+                        <a href="about.html" class="nav-item nav-link">About</a>
+                        <a href="service.html" class="nav-item nav-link">Service</a>
+                        <a href="menu.html" class="nav-item nav-link">Menu</a>
+                        <a href="team.html" class="nav-item nav-link">Our Team</a>
+                        <a href="contact.html" class="nav-item nav-link active">Contact</a>
+                        
+                        <!-- Authentication Section - Inside Navbar -->
+                        <div id="auth-buttons" class="navbar-nav">
+                            <!-- Show when not logged in -->
+                            <div id="login-section" class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="loginDropdown">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                                </a>
+                                <div class="dropdown-menu header-login-dropdown">
+                                    <div id="header-login-container">
+                                        <!-- Simple Login Form -->
+                                        <div id="header-login-form">
+                                            <h6 class="mb-3">Login / Sign Up</h6>
+                                            <form id="header-login-form-element">
+                                                <div class="mb-3">
+                                                    <input type="text" class="form-control" id="headerUserName" 
+                                                           placeholder="Enter your name" required>
+                                                    <small class="text-muted">Your display name</small>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input type="email" class="form-control" id="headerUserEmail" 
+                                                           placeholder="Enter your email" required>
+                                                    <small class="text-muted">We'll use this for notifications</small>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    Login
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <!-- Error Message -->
+                                        <div id="header-error-message" class="alert alert-danger d-none p-2 mt-2" role="alert">
+                                            <small><i class="fas fa-exclamation-triangle me-1"></i>
+                                            <span id="header-error-text"></span></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Show when logged in -->
+                            <div id="user-section" class="nav-item dropdown d-none">
+                                <a href="#" class="nav-link dropdown-toggle text-primary" data-bs-toggle="dropdown" id="navUserDropdown">
+                                    <i class="fas fa-user me-1"></i><span id="navUserPhone">User</span>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-header">
+                                        <div class="fw-bold" id="dropdownUserName">User Name</div>
+                                        <small class="text-muted" id="dropdownUserPhone">+91 00000 00000</small>
+                                    </div>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="dashboard.html" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </a>
+                                    <a href="booking.html" class="dropdown-item">
+                                        <i class="fas fa-calendar-alt me-2"></i>Book Table
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item" onclick="handleLogout()">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Book A Table Button - Separate from auth -->
+                    <a href="booking.html" class="btn btn-primary py-2 px-4">Book A Table</a>
+                </div>
+            </nav>
+
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Contact Us</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center text-uppercase">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Contact</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        
+
+
+       
+        <!-- Contact Information Cards -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                    <h5 class="section-title ff-secondary text-center text-primary fw-normal">Contact Us</h5>
+                    <h1 class="mb-5">Get In Touch With Us</h1>
+                </div>
+                <div class="row g-4 mb-5">
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="bg-light rounded p-4 text-center contact-card">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-primary rounded-circle mb-4 contact-info-icon">
+                                <i class="fa fa-map-marker-alt text-white"></i>
+                            </div>
+                            <h5 class="mb-3">Address</h5>
+                            <p class="mb-2">7th Street, Bagalkot</p>
+                            <p class="mb-0">Karnataka, India</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <div class="bg-light rounded p-4 text-center contact-card">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-primary rounded-circle mb-4 contact-info-icon">
+                                <i class="fa fa-phone-alt text-white"></i>
+                            </div>
+                            <h5 class="mb-3">Call Us</h5>
+                            <p class="mb-2">+91 7777777777</p>
+                            <p class="mb-1">Available 7AM - 11PM</p>
+                            <a href="tel:+917777777777" class="btn btn-primary btn-sm mt-2">
+                                <i class="fa fa-phone me-1"></i>Call Now
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                        <div class="bg-light rounded p-4 text-center contact-card">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-primary rounded-circle mb-4 contact-info-icon">
+                                <i class="fa fa-envelope text-white"></i>
+                            </div>
+                            <h5 class="mb-3">Email Us</h5>
+                            <p class="mb-2">fooddynasty@gmail.com</p>
+                            <p class="mb-0">We'll respond within 24 hours</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Form and Map Section -->
+                <div class="row g-4">
+                    <div class="col-12 mb-4">
+                        <div class="text-center">
+                            <h3 class="mb-4">Send Us A Message</h3>
+                            <p class="text-muted">Have a question or want to make a reservation? Get in touch with us!</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.1s">
+                        <iframe class="position-relative rounded w-100 h-100"
+                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d61312.585792142796!2d75.61761904985154!3d16.16706218863058!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc77889eae13979%3A0x2911d2fb816d80c4!2sBagalkote%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1695181715945!5m2!1sen!2sin"
+                            frameborder="0" style="min-height: 350px; border:0;" allowfullscreen="" aria-hidden="false"
+                            tabindex="0"></iframe>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="wow fadeInUp contact-form" data-wow-delay="0.2s">
+                            <form id="contactForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="contactName" name="name" placeholder="Your Name" required>
+                                            <label for="contactName">Your Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="email" class="form-control" id="contactEmail" name="email" placeholder="Your Email" required>
+                                            <label for="contactEmail">Your Email</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="tel" class="form-control" id="contactPhone" name="phone" placeholder="Your Phone Number" required>
+                                            <label for="contactPhone">Your Phone Number</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="contactPurpose" name="purpose" required>
+                                                <option value="">Select Purpose</option>
+                                                <option value="connecting">General Connecting</option>
+                                                <option value="reservation">Table Reservation</option>
+                                                <option value="catering">Catering Services</option>
+                                                <option value="franchises">Franchise Inquiry</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                            <label for="contactPurpose">Contact Purpose</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="contactSubject" name="subject" placeholder="Subject" required>
+                                            <label for="contactSubject">Subject</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <textarea class="form-control contact-textarea" placeholder="Leave a message here" id="contactMessage" name="message" required></textarea>
+                                            <label for="contactMessage">Message</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div id="contactFormMessage" class="alert d-none" role="alert"></div>
+                                        <button class="btn btn-primary w-100 py-3" type="submit" id="contactSubmitBtn">
+                                            <span class="btn-text">Send Message</span>
+                                            <span class="btn-spinner d-none">
+                                                <i class="fas fa-spinner fa-spin me-2"></i>Sending...
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+
+        
+        <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Food-Dynasty</h4>
+                        <a class="btn btn-link" href="">About Us</a>
+                        <a class="btn btn-link" href="">Contact Us</a>
+                        <a class="btn btn-link" href="">Reservation</a>
+                        <a class="btn btn-link" href="">Privacy Policy</a>
+                        <a class="btn btn-link" href="">Terms & Condition</a>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>7th Street, Bagalkot</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+91 7777777777</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>fooddynasty@gmail.com</p>
+                        <div class="d-flex pt-2">
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Opening</h4>
+                        <h5 class="text-light fw-normal">Monday - Saturday</h5>
+                        <p>07AM - 11PM</p>
+                        <h5 class="text-light fw-normal">Sunday</h5>
+                        <p>8AM - 11PM</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Reserve Now</h4>
+                        <p class="mb-3">Book your table for an unforgettable dining experience</p>
+                        <div class="mb-3">
+                            <p class="mb-2"><i class="fa fa-phone-alt me-2 text-primary"></i>Call: +91 7777777777</p>
+                            <p class="mb-2"><i class="fa fa-clock me-2 text-primary"></i>Quick Booking Available</p>
+                        </div>
+                        <a href="booking.html" class="btn btn-primary py-2 px-4 w-100">Book Table Online</a>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p>&copy; <a class="border-bottom" href="#">Food-Dynasty</a>, All Right Reserved. 
+                        <br>Designed By <a class="border-bottom" href="">Food-Dynasty Team</a></p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="index.html">Home</a>
+                            <a href="about.html">About</a>
+                            <a href="menu.html">Menu</a>
+                            <a href="contact.html">Contact</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+
+        
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+   
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+
+
+    
+
+    
+    <script src="js/main.js"></script>
+    
+    <!-- Authentication Javascript -->
+    <script src="js/header-auth.js"></script>
+    
+    <script>
+
+        // Contact Form Handler
+        class ContactFormHandler {
+            constructor() {
+                this.form = document.getElementById('contactForm');
+                this.submitBtn = document.getElementById('contactSubmitBtn');
+                this.messageDiv = document.getElementById('contactFormMessage');
+                
+
+                this.init();
+            }
+
+            init() {
+                if (this.form) {
+                    this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                }
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this.form);
+                const data = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    purpose: formData.get('purpose'),
+                    subject: formData.get('subject'),
+                    message: formData.get('message')
+                };
+
+                // Validate form
+                if (!this.validateForm(data)) {
+                    return;
+                }
+
+                // Show loading state
+                this.setLoadingState(true);
+
+                try {
+                    // Send contact inquiry via Google Forms
+                    await this.sendViaGoogleForms(data);
+                    this.saveContactToLocalStorage(data);
+                    
+                    this.showMessage('success', `Message sent successfully! We'll get back to you within 24 hours regarding your ${this.getPurposeDisplayName(data.purpose)} inquiry.`);
+                    this.form.reset();
+                } catch (error) {
+                    console.error('Contact form submission error:', error);
+                    this.showMessage('danger', 'Failed to send message. Please call us directly at +91 7777777777.');
+                } finally {
+                    this.setLoadingState(false);
+                }
+            }
+
+            validateForm(data) {
+                if (!data.name || !data.email || !data.phone || !data.purpose || !data.subject || !data.message) {
+                    this.showMessage('warning', 'Please fill in all fields.');
+                    return false;
+                }
+
+                if (!this.isValidEmail(data.email)) {
+                    this.showMessage('warning', 'Please enter a valid email address.');
+                    return false;
+                }
+
+                if (!this.isValidPhone(data.phone)) {
+                    this.showMessage('warning', 'Please enter a valid phone number.');
+                    return false;
+                }
+
+                return true;
+            }
+
+            isValidPhone(phone) {
+                // Basic phone validation - accepts various formats
+                const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+                return phoneRegex.test(cleanPhone) && cleanPhone.length >= 10;
+            }
+
+            isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+
+
+            getPurposeDisplayName(purpose) {
+                const purposes = {
+                    'connecting': 'General Connecting',
+                    'reservation': 'Table Reservation',
+                    'catering': 'Catering Services',
+                    'franchises': 'Franchise Inquiry',
+                    'other': 'Other'
+                };
+                return purposes[purpose] || purpose;
+            }
+
+            formatDateTime(date) {
+                return date.toLocaleString('en-IN', {
+                    timeZone: 'Asia/Kolkata',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            }
+
+            // Hardcoded Google Form configuration (production ready)
+            getGoogleFormConfig() {
+                return {
+                    formURL: 'https://docs.google.com/forms/d/1du6VVzTu_kTcn-01kDTjgaZuLJm7Uf4A6ymtffPVdUA/formResponse',
+                    fields: {
+                        name: 'entry.933857689',
+                        email: 'entry.1385602584',
+                        phone: 'entry.15487817',
+                        purpose: 'entry.944656795',
+                        subject: 'entry.831866008',
+                        message: 'entry.482962501'
+                    }
+                };
+            }
+
+            // Google Forms Integration - Contact Form Submission
+            async sendViaGoogleForms(data) {
+                // Google Form Configuration - Load from environment variables
+                const googleFormConfig = this.getGoogleFormConfig();
+                
+
+                
+                // Create form data with exact field mapping
+                const params = new URLSearchParams();
+                params.append(googleFormConfig.fields.name, data.name);
+                params.append(googleFormConfig.fields.email, data.email);
+                params.append(googleFormConfig.fields.phone, data.phone);
+                
+                // Special handling for multiple choice field (purpose)
+                const purposeValue = this.getPurposeDisplayName(data.purpose);
+                params.append(googleFormConfig.fields.purpose, purposeValue);
+                
+                params.append(googleFormConfig.fields.subject, data.subject);
+                params.append(googleFormConfig.fields.message, `${data.message}\n\n--- Submitted from Food-Dynasty website ---\nDate: ${this.formatDateTime(new Date())}`);
+                
+
+                
+                try {
+                    const response = await fetch(googleFormConfig.formURL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: params
+                    });
+
+
+                    
+                    // Since we use no-cors, we can't check response status
+                    // We'll assume success and let user check the Google Form responses
+                    return { success: true, method: 'google-forms' };
+                    
+                } catch (error) {
+                    console.error('Google Forms submission error:', error);
+                    throw error;
+                }
+            }
+
+            // Fallback: Open Google Form with pre-filled data
+            openGoogleFormWithData(data) {
+                const baseURL = 'https://docs.google.com/forms/d/e/1FAIpQLSfdu6VVzTu_kTcn-01kDTjgaZuLJm7Uf4A6ymtffPVdUA/viewform';
+                
+                const params = new URLSearchParams();
+                params.append('entry.933857689', data.name);
+                params.append('entry.1385602584', data.email);
+                params.append('entry.15487817', data.phone);
+                params.append('entry.944656795', this.getPurposeDisplayName(data.purpose));
+                params.append('entry.482962501', data.subject);
+                params.append('entry.831866008', `${data.message}\n\nSubmitted from Food-Dynasty website: ${this.formatDateTime(new Date())}`);
+                
+                const prefilledURL = `${baseURL}?${params.toString()}`;
+                
+
+                window.open(prefilledURL, '_blank', 'noopener');
+            }
+
+
+
+            // Get emoji for each purpose type
+            getPurposeEmoji(purpose) {
+                const emojis = {
+                    'connecting': '💬',
+                    'reservation': '🍽️',
+                    'catering': '🎉',
+                    'franchises': '🏪',
+                    'other': '❓'
+                };
+                return emojis[purpose] || '📝';
+            }
+
+            // Save contact inquiry to local storage
+            saveContactToLocalStorage(data) {
+                const inquiry = {
+                    id: 'CONTACT_' + Date.now(),
+                    ...data,
+                    timestamp: new Date().toISOString(),
+                    formattedDate: this.formatDateTime(new Date()),
+                    status: 'new',
+                    type: 'contact_inquiry',
+                    purposeDisplay: this.getPurposeDisplayName(data.purpose)
+                };
+
+                // Get existing inquiries
+                const existingInquiries = JSON.parse(localStorage.getItem('contactInquiries') || '[]');
+                existingInquiries.unshift(inquiry); // Add to beginning for newest first
+                
+                // Keep only last 100 inquiries
+                if (existingInquiries.length > 100) {
+                    existingInquiries.splice(100);
+                }
+                
+                localStorage.setItem('contactInquiries', JSON.stringify(existingInquiries));
+
+                
+                // Also save to a summary for easy access
+                this.updateInquirySummary();
+            }
+
+
+
+            // Update inquiry summary for dashboard
+            updateInquirySummary() {
+                const inquiries = JSON.parse(localStorage.getItem('contactInquiries') || '[]');
+                const today = new Date().toDateString();
+                
+                const summary = {
+                    totalInquiries: inquiries.length,
+                    todayInquiries: inquiries.filter(i => new Date(i.timestamp).toDateString() === today).length,
+                    pendingInquiries: inquiries.filter(i => i.status === 'new').length,
+                    purposeBreakdown: {}
+                };
+
+                // Count by purpose
+                inquiries.forEach(inquiry => {
+                    const purpose = inquiry.purposeDisplay || inquiry.purpose;
+                    summary.purposeBreakdown[purpose] = (summary.purposeBreakdown[purpose] || 0) + 1;
+                });
+
+                localStorage.setItem('contactInquirySummary', JSON.stringify(summary));
+            }
+
+            setLoadingState(loading) {
+                const btnText = this.submitBtn.querySelector('.btn-text');
+                const btnSpinner = this.submitBtn.querySelector('.btn-spinner');
+
+                if (loading) {
+                    btnText.classList.add('d-none');
+                    btnSpinner.classList.remove('d-none');
+                    this.submitBtn.disabled = true;
+                } else {
+                    btnText.classList.remove('d-none');
+                    btnSpinner.classList.add('d-none');
+                    this.submitBtn.disabled = false;
+                }
+            }
+
+            showMessage(type, message) {
+                this.messageDiv.className = `alert alert-${type}`;
+                this.messageDiv.textContent = message;
+                this.messageDiv.classList.remove('d-none');
+
+                // Auto-hide success messages after 5 seconds
+                if (type === 'success') {
+                    setTimeout(() => {
+                        this.messageDiv.classList.add('d-none');
+                    }, 5000);
+                }
+            }
+        }
+
+        // Simple Contact Inquiry Viewer
+        function viewContactInquiries() {
+            const inquiries = JSON.parse(localStorage.getItem('contactInquiries') || '[]');
+            const summary = JSON.parse(localStorage.getItem('contactInquirySummary') || '{}');
+            
+            if (inquiries.length === 0) {
+                alert('No contact inquiries found.');
+                return;
+            }
+
+            let content = `📋 CONTACT INQUIRIES SUMMARY\n`;
+            content += `Total: ${summary.totalInquiries || 0} | Today: ${summary.todayInquiries || 0} | Pending: ${summary.pendingInquiries || 0}\n\n`;
+            
+            content += `📊 BY PURPOSE:\n`;
+            Object.entries(summary.purposeBreakdown || {}).forEach(([purpose, count]) => {
+                content += `• ${purpose}: ${count}\n`;
+            });
+            
+            content += `\n🔍 RECENT INQUIRIES (Latest 5):\n`;
+            content += `${'='.repeat(50)}\n`;
+            
+            inquiries.slice(0, 5).forEach((inquiry, index) => {
+                content += `${index + 1}. ${inquiry.name} (${inquiry.purposeDisplay})\n`;
+                content += `   📧 ${inquiry.email} | 📱 ${inquiry.phone}\n`;
+                content += `   💬 ${inquiry.subject}\n`;
+                content += `   📅 ${inquiry.formattedDate}\n`;
+                content += `   Status: ${inquiry.status.toUpperCase()}\n\n`;
+            });
+
+            // Simple alert with inquiry summary
+            alert(content);
+        }
+
+        // Initialize everything on page load
+        $(document).ready(function() {
+            // Initialize contact form
+            new ContactFormHandler();
+            
+            // Add keyboard shortcut to view inquiries (Ctrl+Alt+I)
+            $(document).keydown(function(e) {
+                if (e.ctrlKey && e.altKey && e.keyCode === 73) { // Ctrl+Alt+I
+                    viewContactInquiries();
+                }
+            });
+            
+            // Ensure proper initialization order with delays
+            setTimeout(function() {
+                // HeaderAuth auto-initializes in constructor, no need to call init()
+                
+                // Update auth UI after header auth is initialized
+                if (typeof updateAuthUI === 'function') {
+                    updateAuthUI();
+                }
+            }, 300);
+        });
+        
+        // Also check on window load as backup
+        $(window).on('load', function() {
+            setTimeout(function() {
+                if (typeof updateAuthUI === 'function') {
+                    updateAuthUI();
+                }
+            }, 400);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Food-Dynasty</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    
+
+    <link href="css/restaurant.css" rel="stylesheet">
+
+        <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    
+    <!-- Authentication Stylesheet -->
+    <link href="css/auth.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <div class="container-xxl position-relative p-0">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+                <a href="" class="navbar-brand p-0">
+                    <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Food-Dynasty</h1>
+                    
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav ms-auto py-0 pe-4">
+                        <a href="index.html" class="nav-item nav-link">Home</a>
+                        <a href="about.html" class="nav-item nav-link">About</a>
+                        <a href="service.html" class="nav-item nav-link">Service</a>
+                        <a href="menu.html" class="nav-item nav-link">Menu</a>
+                        <a href="team.html" class="nav-item nav-link">Our Team</a>
+                        <a href="contact.html" class="nav-item nav-link">Contact</a>
+                        
+                        <!-- Authentication Section - Inside Navbar -->
+                        <div id="auth-buttons" class="navbar-nav">
+                            <!-- Show when not logged in -->
+                            <div id="login-section" class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="loginDropdown">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                                </a>
+                                <div class="dropdown-menu header-login-dropdown">
+                                    <div id="header-login-container">
+                                        <!-- Simple Login Form -->
+                                        <div id="header-login-form">
+                                            <h6 class="mb-3">Welcome to Food Dynasty</h6>
+                                            <form id="header-login-form-element">
+                                                <div class="mb-3">
+                                                    <input type="text" class="form-control" id="headerUserName" 
+                                                           placeholder="Enter your name" required>
+                                                    <small class="text-muted">Your display name</small>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input type="email" class="form-control" id="headerUserEmail" 
+                                                           placeholder="Enter your email" required>
+                                                    <small class="text-muted">We'll remember you for 24 hours</small>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary w-100" id="header-login-btn">
+                                                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <!-- Error Message -->
+                                        <div id="header-error-message" class="alert alert-danger d-none p-2 mt-2" role="alert">
+                                            <small><i class="fas fa-exclamation-triangle me-1"></i>
+                                            <span id="header-error-text"></span></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Show when logged in -->
+                            <div id="user-section" class="nav-item dropdown d-none">
+                                <a href="#" class="nav-link dropdown-toggle text-primary" data-bs-toggle="dropdown" id="navUserDropdown">
+                                    <i class="fas fa-user me-1"></i><span id="navUserPhone">User</span>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-header">
+                                        <div class="fw-bold" id="dropdownUserName">User Name</div>
+                                        <small class="text-muted" id="dropdownUserPhone">+91 00000 00000</small>
+                                    </div>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="dashboard.html" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </a>
+                                    <a href="booking.html" class="dropdown-item">
+                                        <i class="fas fa-calendar-alt me-2"></i>Book Table
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item" onclick="handleLogout()">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Book A Table Button - Separate from auth -->
+                    <a href="booking.html" class="btn btn-primary py-2 px-4">Book A Table</a>
+                </div>
+            </nav>
+
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Booking</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center text-uppercase">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Booking</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="row g-0">
+                <div class="col-md-6">
+                    
+                        <img class="flex-shrink-0 img-fluid rounded" src="img/indoor.jpg" alt="" style="width: 800px;">
+                
+                </div>
+                <div class="col-md-6 bg-dark d-flex align-items-center">
+                    <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+                        <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
+                        <h1 class="text-white mb-4">Book A Table Online</h1>
+                        <!-- Success Message -->
+                        <div id="booking-success" class="alert alert-success d-none" role="alert">
+                            <h4 class="alert-heading">
+                                <i class="fas fa-check-circle me-2"></i>Booking Confirmed!
+                            </h4>
+                            <p>Your table reservation has been successfully submitted and saved to your dashboard.</p>
+                            <div class="alert alert-info py-2 mt-3 mb-3">
+                                <small><i class="fas fa-envelope me-2"></i>Confirmation emails are being sent to you and our restaurant.</small>
+                            </div>
+                            <div id="email-status"></div>
+                            <hr>
+                            <div class="d-flex gap-2">
+                                <a href="dashboard.html" class="btn btn-success">
+                                    <i class="fas fa-tachometer-alt me-2"></i>View Dashboard
+                                </a>
+                                <button class="btn btn-outline-success" onclick="resetBookingForm()">
+                                    <i class="fas fa-plus me-2"></i>Book Another
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div id="booking-error" class="alert alert-danger d-none" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="booking-error-text">Please correct the errors and try again.</span>
+                        </div>
+
+                        <form id="booking-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="booking-name" placeholder="Your Name" required>
+                                        <label for="booking-name">Your Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control" id="booking-email" placeholder="Your Email" required>
+                                        <label for="booking-email">Your Email</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="datetime-local" class="form-control" id="booking-datetime" placeholder="Date & Time" required />
+                                        <label for="booking-datetime">Date & Time</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="booking-people" required>
+                                            <option value="">Select People</option>
+                                            <option value="1">1 Person</option>
+                                            <option value="2">2 People</option>
+                                            <option value="3">3 People</option>
+                                            <option value="4">4 People</option>
+                                            <option value="5">5 People</option>
+                                            <option value="6">6 People</option>
+                                            <option value="7">7 People</option>
+                                            <option value="8">8 People</option>
+                                        </select>
+                                        <label for="booking-people">No Of People</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" placeholder="Special Request" id="booking-message" style="height: 100px"></textarea>
+                                        <label for="booking-message">Special Request</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100 py-3" type="submit" id="book-now-btn">
+                                        <span class="btn-text">
+                                            <i class="fas fa-calendar-check me-2"></i>Book Now
+                                        </span>
+                                        <span class="btn-spinner d-none">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>Processing...
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Food-Dynasty</h4>
+                        <a class="btn btn-link" href="">About Us</a>
+                        <a class="btn btn-link" href="">Contact Us</a>
+                        <a class="btn btn-link" href="">Reservation</a>
+                        <a class="btn btn-link" href="">Privacy Policy</a>
+                        <a class="btn btn-link" href="">Terms & Condition</a>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>7th Street, Bagalkot</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+91 7777777777</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>fooddynasty@gmail.com</p>
+                        <div class="d-flex pt-2">
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Opening</h4>
+                        <h5 class="text-light fw-normal">Monday - Saturday</h5>
+                        <p>07AM - 11PM</p>
+                        <h5 class="text-light fw-normal">Sunday</h5>
+                        <p>08AM - 11PM</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Reserve Now</h4>
+                        <p class="mb-3">Book your table for an unforgettable dining experience</p>
+                        <div class="mb-3">
+                            <p class="mb-2"><i class="fa fa-phone-alt me-2 text-primary"></i>Call: +91 7777777777</p>
+                            <p class="mb-2"><i class="fa fa-clock me-2 text-primary"></i>Quick Booking Available</p>
+                        </div>
+                        <a href="#reservationForm" class="btn btn-primary py-2 px-4 w-100">Scroll to Book</a>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p>&copy; <a class="border-bottom" href="#">Food-Dynasty</a>, All Right Reserved. 
+                        <br>Designed By <a class="border-bottom" href="">Food-Dynasty Team</a></p>
+                    </div>
+            
+                        <div class="col-md-6 text-center text-md-end">
+                            <div class="footer-menu">
+                                <a href="">Home</a>
+                                <a href="">Cookies</a>
+                                <a href="">Help</a>
+                                <a href="">FQAs</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+
+
+    
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <script src="js/main.js"></script>
+    <script src="js/email-service.js"></script>
+    
+    <!-- Authentication Javascript -->
+    <script src="js/header-auth.js"></script>
+    
+    <script>
+        // Booking Form Handler
+        class BookingHandler {
+            constructor() {
+                this.initializeEventListeners();
+                this.initializeDateTimePicker();
+                this.prefillUserData();
+            }
+
+            initializeEventListeners() {
+                const bookingForm = document.getElementById('booking-form');
+                if (bookingForm) {
+                    bookingForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.handleBookingSubmission();
+                    });
+                }
+            }
+
+            initializeDateTimePicker() {
+                const dateInput = document.getElementById('booking-datetime');
+                
+                if (dateInput) {
+                    // Set minimum date to current time + 30 minutes
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() + 30);
+                    dateInput.min = now.toISOString().slice(0, 16);
+                    
+                    // Set default value to 1 hour from now
+                    now.setMinutes(now.getMinutes() + 30);
+                    dateInput.value = now.toISOString().slice(0, 16);
+                }
+            }
+
+            prefillUserData() {
+                // Check if user is logged in and pre-fill name/email
+                const userName = localStorage.getItem('userName');
+                const userEmail = localStorage.getItem('userEmail');
+                const authToken = localStorage.getItem('authToken');
+
+                if (userName && userEmail && authToken) {
+                    const nameInput = document.getElementById('booking-name');
+                    const emailInput = document.getElementById('booking-email');
+
+                    if (nameInput && !nameInput.value) {
+                        nameInput.value = userName;
+                    }
+
+                    if (emailInput && !emailInput.value) {
+                        emailInput.value = userEmail;
+                    }
+                }
+            }
+
+            async handleBookingSubmission() {
+                const formData = this.getFormData();
+                if (!this.validateForm(formData)) {
+                    return;
+                }
+
+                this.setButtonLoading(true);
+                this.hideMessages();
+
+                try {
+                    // Use form data directly (no authentication required)
+                    formData.userName = formData.name;
+                    
+                    // Save booking to localStorage
+                    const booking = this.saveBooking(formData);
+                    
+                    // Send booking emails
+                    const emailResults = await this.sendBookingEmails(booking);
+                    
+                    // Show success message
+                    this.showSuccess(booking, emailResults);
+                    
+                    // Reset form
+                    this.resetForm();
+                    
+                } catch (error) {
+                    this.showError('Failed to process booking. Please try again.');
+                } finally {
+                    this.setButtonLoading(false);
+                }
+            }
+
+            getFormData() {
+                const datetimeValue = document.getElementById('booking-datetime').value.trim();
+                
+                return {
+                    name: document.getElementById('booking-name').value.trim(),
+                    email: document.getElementById('booking-email').value.trim(),
+                    datetime: datetimeValue,
+                    people: document.getElementById('booking-people').value,
+                    message: document.getElementById('booking-message').value.trim()
+                };
+            }
+
+            validateForm(formData) {
+                const errors = [];
+
+                if (!formData.name) errors.push('Name is required');
+                if (!formData.email) errors.push('Email is required');
+                if (!formData.datetime) errors.push('Date & Time is required');
+                if (!formData.people) errors.push('Number of people is required');
+
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (formData.email && !emailRegex.test(formData.email)) {
+                    errors.push('Please enter a valid email address');
+                }
+
+                // Date validation (should be future date)
+                if (formData.datetime) {
+                    const selectedDate = new Date(formData.datetime);
+                    const now = new Date();
+                    if (selectedDate <= now) {
+                        errors.push('Please select a future date and time');
+                    }
+                }
+
+                if (errors.length > 0) {
+                    this.showError(errors.join('<br>'));
+                    return false;
+                }
+
+                return true;
+            }
+
+            saveBooking(formData) {
+                // Create booking object
+                const booking = {
+                    id: 'FD_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    ...formData,
+                    status: 'pending',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+
+                // Get existing bookings for this email
+                const existingBookings = JSON.parse(
+                    localStorage.getItem(`bookings_${formData.email}`) || '[]'
+                );
+
+                // Add new booking to beginning of array
+                existingBookings.unshift(booking);
+
+                // Save back to localStorage using email from form
+                localStorage.setItem(`bookings_${formData.email}`, JSON.stringify(existingBookings));
+
+                // Also save to a general bookings list for admin access
+                const allBookings = JSON.parse(localStorage.getItem('all_bookings') || '[]');
+                allBookings.unshift(booking);
+                localStorage.setItem('all_bookings', JSON.stringify(allBookings));
+
+                return booking;
+            }
+
+            showSuccess(booking, emailResults) {
+                const successDiv = document.getElementById('booking-success');
+                const formDiv = document.getElementById('booking-form');
+                
+                if (successDiv && formDiv) {
+                    formDiv.classList.add('d-none');
+                    successDiv.classList.remove('d-none');
+                    
+                    // Update success message based on email results
+                    const emailStatusDiv = document.getElementById('email-status');
+                    if (emailStatusDiv && emailResults) {
+                        if (emailResults.customer.success && emailResults.restaurant.success) {
+                            emailStatusDiv.innerHTML = '<div class="alert alert-success alert-sm mt-2"><i class="fas fa-check-circle me-2"></i><small>Confirmation emails sent successfully!</small></div>';
+                        } else if (!emailResults.customer.success || !emailResults.restaurant.success) {
+                            emailStatusDiv.innerHTML = '<div class="alert alert-warning alert-sm mt-2"><i class="fas fa-exclamation-triangle me-2"></i><small>Booking confirmed but email delivery may be delayed.</small></div>';
+                        }
+                    }
+                    
+                    // Scroll to success message
+                    successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.getElementById('booking-error');
+                const errorText = document.getElementById('booking-error-text');
+                
+                if (errorDiv && errorText) {
+                    errorText.innerHTML = message;
+                    errorDiv.classList.remove('d-none');
+                    
+                    // Scroll to error message
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            hideMessages() {
+                const successDiv = document.getElementById('booking-success');
+                const errorDiv = document.getElementById('booking-error');
+                
+                if (successDiv) successDiv.classList.add('d-none');
+                if (errorDiv) errorDiv.classList.add('d-none');
+            }
+
+            setButtonLoading(loading) {
+                const btn = document.getElementById('book-now-btn');
+                const btnText = btn?.querySelector('.btn-text');
+                const btnSpinner = btn?.querySelector('.btn-spinner');
+                
+                if (btn && btnText && btnSpinner) {
+                    if (loading) {
+                        btnText.classList.add('d-none');
+                        btnSpinner.classList.remove('d-none');
+                        btn.disabled = true;
+                    } else {
+                        btnText.classList.remove('d-none');
+                        btnSpinner.classList.add('d-none');
+                        btn.disabled = false;
+                    }
+                }
+            }
+
+            resetForm() {
+                const form = document.getElementById('booking-form');
+                if (form) {
+                    form.reset();
+                }
+            }
+
+            // Send booking emails
+            async sendBookingEmails(booking) {
+                try {
+                    // Check if EmailJS service is available
+                    if (typeof window.emailService === 'undefined') {
+                        return { customer: { success: false, error: 'Email service not available' }, restaurant: { success: false, error: 'Email service not available' } };
+                    }
+
+                    // Send both customer and restaurant emails
+                    const emailResults = await window.emailService.sendBookingEmails(booking);
+                    return emailResults;
+
+                } catch (error) {
+                    return { customer: { success: false, error: error.message }, restaurant: { success: false, error: error.message } };
+                }
+            }
+        }
+
+        // Reset booking form function (called from success message)
+        function resetBookingForm() {
+            const successDiv = document.getElementById('booking-success');
+            const formDiv = document.getElementById('booking-form');
+            
+            if (successDiv && formDiv) {
+                successDiv.classList.add('d-none');
+                formDiv.classList.remove('d-none');
+                
+                // Reset form
+                if (window.bookingHandler) {
+                    window.bookingHandler.resetForm();
+                }
+            }
+        }
+
+        // Initialize booking handler when page loads
+        $(document).ready(function() {
+            try {
+                window.bookingHandler = new BookingHandler();
+            } catch (error) {
+                // Silent failure - booking handler initialization failed
+            }
+        });
+
+
+
+        // Initialize authentication on page load
+        $(document).ready(function() {
+            // Ensure proper initialization order with delays
+            setTimeout(function() {
+                // HeaderAuth auto-initializes in constructor, no need to call init()
+                
+                // Update auth UI after header auth is initialized
+                if (typeof updateAuthUI === 'function') {
+                    updateAuthUI();
+                }
+            }, 300);
+        });
+        
+        // Also check on window load as backup
+        $(window).on('load', function() {
+            setTimeout(function() {
+                if (typeof updateAuthUI === 'function') {
+                    updateAuthUI();
+                }
+            }, 400);
+        });
+    </script>
+</body>
+
+</html>
