@@ -220,6 +220,35 @@
                                         <label for="booking-message">Special Request</label>
                                     </div>
                                 </div>
+                                
+                                <!-- CAPTCHA Section -->
+                                <div class="col-12">
+                                    <div class="captcha-container p-3 border rounded bg-light">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-6">
+                                                <label for="captcha-input" class="form-label fw-bold">Security Verification:</label>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="captcha-display bg-white p-2 border rounded text-center" style="min-width: 120px; font-family: monospace; font-size: 18px; font-weight: bold; letter-spacing: 3px; background: linear-gradient(45deg, #f0f0f0, #ffffff);" id="captcha-display">
+                                                        <!-- CAPTCHA will be generated here -->
+                                                    </div>
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="generateCaptcha()" title="Refresh CAPTCHA">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="captcha-input" placeholder="Enter CAPTCHA" required>
+                                                    <label for="captcha-input">Enter the code above</label>
+                                                </div>
+                                                <div id="captcha-error" class="text-danger small mt-1 d-none">
+                                                    <i class="fas fa-exclamation-triangle"></i> CAPTCHA verification failed. Please try again.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit" id="book-now-btn">
                                         <span class="btn-text">
@@ -439,6 +468,11 @@
                     }
                 }
 
+                // CAPTCHA validation
+                if (!validateCaptcha()) {
+                    errors.push('Please complete the security verification correctly');
+                }
+
                 if (errors.length > 0) {
                     this.showError(errors.join('<br>'));
                     return false;
@@ -542,6 +576,10 @@
                 const form = document.getElementById('booking-form');
                 if (form) {
                     form.reset();
+                    // Reset CAPTCHA
+                    if (typeof generateCaptcha === 'function') {
+                        generateCaptcha();
+                    }
                 }
             }
 
@@ -610,6 +648,83 @@
                     updateAuthUI();
                 }
             }, 400);
+        });
+        
+        // CAPTCHA functionality
+        let currentCaptcha = '';
+
+        function generateCaptcha() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+            let captcha = '';
+            for (let i = 0; i < 6; i++) {
+                captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            currentCaptcha = captcha;
+            
+            // Display CAPTCHA with some visual styling
+            const captchaDisplay = document.getElementById('captcha-display');
+            if (captchaDisplay) {
+                captchaDisplay.textContent = captcha;
+                // Add some random colors to make it harder for bots
+                const colors = ['#333', '#666', '#999', '#007bff', '#28a745', '#dc3545'];
+                captchaDisplay.style.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            // Clear previous input and error
+            const captchaInput = document.getElementById('captcha-input');
+            const captchaError = document.getElementById('captcha-error');
+            if (captchaInput) captchaInput.value = '';
+            if (captchaError) captchaError.classList.add('d-none');
+        }
+
+        function validateCaptcha() {
+            const captchaInput = document.getElementById('captcha-input');
+            const captchaError = document.getElementById('captcha-error');
+            
+            if (!captchaInput || !captchaError) return false;
+            
+            const userInput = captchaInput.value.trim();
+            const isValid = userInput === currentCaptcha;
+            
+            if (!isValid) {
+                captchaError.classList.remove('d-none');
+                captchaInput.classList.add('is-invalid');
+                generateCaptcha(); // Generate new CAPTCHA on failure
+                return false;
+            } else {
+                captchaError.classList.add('d-none');
+                captchaInput.classList.remove('is-invalid');
+                return true;
+            }
+        }
+
+        // Initialize CAPTCHA when page loads
+        $(document).ready(function() {
+            // Generate initial CAPTCHA
+            generateCaptcha();
+            
+            // Add CAPTCHA validation to form submission
+            const bookingForm = document.getElementById('booking-form');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function(e) {
+                    if (!validateCaptcha()) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            }
+            
+            // Clear CAPTCHA error when user starts typing
+            const captchaInput = document.getElementById('captcha-input');
+            if (captchaInput) {
+                captchaInput.addEventListener('input', function() {
+                    const captchaError = document.getElementById('captcha-error');
+                    if (captchaError) {
+                        captchaError.classList.add('d-none');
+                    }
+                    this.classList.remove('is-invalid');
+                });
+            }
         });
     </script>
 </body>
