@@ -465,7 +465,7 @@
                     await this.sendViaGoogleForms(data);
                     this.saveContactToLocalStorage(data);
                     
-                    this.showMessage('success', `Message sent successfully! We'll get back to you within 24 hours regarding your ${this.getPurposeDisplayName(data.purpose)} inquiry.`);
+                    this.showMessage('success', `✅ Message sent successfully! You'll receive an auto-reply confirmation email shortly. Our team will get back to you within 24 hours regarding your ${this.getPurposeDisplayName(data.purpose)} inquiry.`);
                     this.form.reset();
                 } catch (error) {
                     console.error('Contact form submission error:', error);
@@ -530,7 +530,7 @@
                 });
             }
 
-            // Hardcoded Google Form configuration (production ready)
+            // Google Form configuration (your existing form with auto-reply)
             getGoogleFormConfig() {
                 return {
                     formURL: 'https://docs.google.com/forms/d/1du6VVzTu_kTcn-01kDTjgaZuLJm7Uf4A6ymtffPVdUA/formResponse',
