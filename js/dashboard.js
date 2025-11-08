@@ -121,12 +121,21 @@ class DashboardManager {
             pending: 0,
             confirmed: 0,
             cancelled: 0,
-            totalGuests: 0
+            services: {
+                connecting: 0,    // General Connecting
+                reservation: 0,   // Table Reservation
+                catering: 0,     // Catering Services
+                franchises: 0,    // Franchise Inquiry
+                other: 0         // Other
+            }
         };
 
         this.bookings.forEach(booking => {
             stats[booking.status]++;
-            stats.totalGuests += parseInt(booking.people) || 0;
+            // Count by service type if available
+            if (booking.service) {
+                stats.services[booking.service] = (stats.services[booking.service] || 0) + 1;
+            }
         });
 
         return stats;
@@ -221,15 +230,19 @@ class DashboardManager {
     renderStats() {
         const stats = this.getBookingStats();
         
+        // Update booking statistics
         const totalBookingsEl = document.getElementById('total-bookings');
         const pendingBookingsEl = document.getElementById('pending-bookings');
         const confirmedBookingsEl = document.getElementById('confirmed-bookings');
-        const totalGuestsEl = document.getElementById('total-guests');
+        const servicesCountEl = document.getElementById('services-count');
 
         if (totalBookingsEl) totalBookingsEl.textContent = stats.total;
         if (pendingBookingsEl) pendingBookingsEl.textContent = stats.pending;
         if (confirmedBookingsEl) confirmedBookingsEl.textContent = stats.confirmed;
-        if (totalGuestsEl) totalGuestsEl.textContent = stats.totalGuests;
+        
+        // Count total active services (not cancelled bookings)
+        const activeServices = this.bookings.filter(b => b.status !== 'cancelled').length;
+        if (servicesCountEl) servicesCountEl.textContent = activeServices;
     }
 
     // Render bookings list
