@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Restaurant Dashboard Login - Food-Dynasty</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+
+    <!-- Libraries & Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheets -->
+    <link href="css/restaurant.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/auth.css" rel="stylesheet">
+
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            background: white;
+        }
+        .restaurant-icon {
+            font-size: 48px;
+            color: #FEA116;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+        <!-- Spinner -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <div class="container-xxl position-relative p-0">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+                <a href="index.html" class="navbar-brand p-0">
+                    <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Food-Dynasty</h1>
+                </a>
+            </nav>
+
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Restaurant Dashboard</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center text-uppercase">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Restaurant Login</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="container">
+            <div class="login-container">
+                <div class="text-center mb-4">
+                    <i class="fas fa-utensils restaurant-icon"></i>
+                    <h3>Restaurant Staff Login</h3>
+                    <p class="text-muted">Access your restaurant management dashboard</p>
+                </div>
+
+                <form id="restaurant-login-form" onsubmit="return handleRestaurantLogin(event)">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                    </div>
+                    <div id="login-error" class="alert alert-danger d-none mb-3">
+                        Invalid username or password
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="container-fluid bg-dark text-light footer pt-5 mt-5">
+            <div class="container">
+                <div class="copyright">
+                    <div class="row">
+                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                            &copy; <a class="border-bottom" href="#">Food Dynasty</a>, All Right Reserved.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    
+    <script>
+        // Fixed credentials (in a real app, these would be securely stored on a server)
+        const RESTAURANT_CREDENTIALS = {
+            username: 'walio',
+            password: '123'
+        };
+
+        function handleRestaurantLogin(event) {
+            event.preventDefault();
+            console.log('Login attempt...');
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('login-error');
+
+            console.log('Checking credentials...');
+            if (username === RESTAURANT_CREDENTIALS.username && 
+                password === RESTAURANT_CREDENTIALS.password) {
+                console.log('Login successful');
+                // Store login state
+                localStorage.setItem('restaurantLoggedIn', 'true');
+                localStorage.setItem('restaurantLoginTime', new Date().toISOString());
+                
+                console.log('Redirecting to dashboard...');
+                // Redirect to restaurant dashboard
+                window.location.href = 'restaurant-dashboard.html';
+            } else {
+                console.log('Login failed');
+                errorDiv.classList.remove('d-none');
+                setTimeout(() => {
+                    errorDiv.classList.add('d-none');
+                }, 3000);
+            }
+
+            return false;
+        }
+
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            const isLoggedIn = localStorage.getItem('restaurantLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'restaurant-dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>
