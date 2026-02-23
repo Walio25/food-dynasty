@@ -1,78 +1,60 @@
-// Food Dynasty - Email Service with EmailJS Integration
+// Food Dynasty - Email Service with Google Apps Script
 class EmailService {
     constructor() {
+        // Google Apps Script Web App URL
         this.config = {
-            serviceId: 'service_f6epl8n',
-            customerTemplateId: 'template_c6qkor4',
-            restaurantTemplateId: 'template_s4rimim',
-            publicKey: 'nboFDWIKItWjcnWKx'
+            webAppUrl: 'https://script.google.com/macros/s/AKfycby-uU5nRZaNp17qXoLdGIMS8qhlBbovfCKciQh_Y3NKFalZV2MGiw3Qmsc751-WTqayYw/exec'
         };
-        this.initEmailJS();
-    }
-
-    initEmailJS() {
-        if (typeof emailjs !== 'undefined') {
-            emailjs.init(this.config.publicKey);
-        }
+        
+        // Store URL in localStorage for billing system to use
+        localStorage.setItem('googleSheetsApiUrl', this.config.webAppUrl);
     }
 
     async sendBookingEmails(bookingData) {
         try {
-            const results = {
-                customer: { success: false },
-                restaurant: { success: false }
-            };
-
-            // Send customer email
-            if (bookingData.email) {
-                const customerParams = {
-                    to_name: bookingData.name,
-                    to_email: bookingData.email,
-                    booking_id: bookingData.id,
-                    customer_name: bookingData.name,
-                    booking_date: this.formatDateTime(bookingData.datetime),
-                    number_of_people: bookingData.people,
-                    special_request: bookingData.message || 'None',
-                    restaurant_name: 'Food Dynasty',
-                    restaurant_phone: '+91 7777777777',
-                    restaurant_address: '7th Street, Bagalkot, Karnataka',
-                    booking_status: 'Confirmed'
+            // Check if Web App URL is configured
+            if (!this.config.webAppUrl || this.config.webAppUrl.includes('YOUR_GOOGLE')) {
+                console.warn('Google Apps Script Web App URL not configured');
+                return {
+                    customer: { success: false, error: 'Email service not configured' },
+                    restaurant: { success: false, error: 'Email service not configured' }
                 };
-
-                try {
-                    const response = await emailjs.send(this.config.serviceId, this.config.customerTemplateId, customerParams);
-                    results.customer = { success: true, message: 'Customer email sent', response: response };
-                } catch (error) {
-                    results.customer = { success: false, error: error.message };
-                }
             }
 
-            // Send restaurant email
-            const restaurantParams = {
-                to_email: 'waliozing@gmail.com', // Restaurant email
-                booking_id: bookingData.id,
-                customer_name: bookingData.name,
-                customer_email: bookingData.email,
-                booking_date: this.formatDateTime(bookingData.datetime),
-                number_of_people: bookingData.people,
-                special_request: bookingData.message || 'None',
-                booking_status: 'New Booking - Pending Review',
-                booking_time: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+            // Prepare booking data for Google Apps Script
+            const payload = {
+                name: bookingData.name,
+                email: bookingData.email,
+                phone: bookingData.phone || '',
+                datetime: bookingData.datetime,
+                people: bookingData.people,
+                message: bookingData.message || 'None'
             };
 
-            try {
-                const response = await emailjs.send(this.config.serviceId, this.config.restaurantTemplateId, restaurantParams);
-                results.restaurant = { success: true, message: 'Restaurant email sent', response: response };
-            } catch (error) {
-                results.restaurant = { success: false, error: error.message };
-            }
+            // Send to Google Apps Script Web App
+            const response = await fetch(this.config.webAppUrl, {
+                method: 'POST',
+                mode: 'no-cors', // Required for Google Apps Script
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
 
-            return results;
+            // Note: With no-cors mode, we can't read the response
+            // Assume success if no error is thrown
+            console.log('Booking emails sent to Google Apps Script');
+            
+            return {
+                customer: { success: true, message: 'Email sent via Google Apps Script' },
+                restaurant: { success: true, message: 'Email sent via Google Apps Script' }
+            };
 
         } catch (error) {
+            console.error('Email service error:', error);
             return {
-                customer: { success: false, error: 'Service unavailable' },
-                restaurant: { success: false, error: 'Service unavailable' }
+                customer: { success: false, error: error.message },
+                restaurant: { success: false, error: error.message }
             };
         }
     }

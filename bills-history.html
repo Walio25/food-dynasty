@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Bills History - Food-Dynasty</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/restaurant.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/auth.css" rel="stylesheet">
+    
+    <style>
+        .bill-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            background: white;
+        }
+        .bill-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+        .bill-header {
+            border-bottom: 2px solid #FEA116;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .bill-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FEA116;
+        }
+        .bill-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-paid {
+            background: #28a745;
+            color: white;
+        }
+        .payment-badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .payment-cash { background: #28a745; color: white; }
+        .payment-card { background: #007bff; color: white; }
+        .payment-upi { background: #ff9800; color: white; }
+        .payment-online { background: #17a2b8; color: white; }
+        
+        .items-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .item-row:last-child {
+            border-bottom: none;
+        }
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .stats-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .stats-card h3 {
+            color: #FEA116;
+            margin-bottom: 10px;
+        }
+        .stats-card p {
+            color: #666;
+            margin: 0;
+            font-size: 14px;
+        }
+        .print-bill-btn {
+            padding: 5px 15px;
+            font-size: 14px;
+        }
+        .no-bills {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+        .date-badge {
+            background: #e9ecef;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            margin-right: 10px;
+        }
+        .export-btn {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+        <!-- Spinner -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <div class="container-xxl position-relative p-0">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+                <a href="index.html" class="navbar-brand p-0">
+                    <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Food-Dynasty</h1>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav ms-auto py-0 pe-4">
+                        <a href="restaurant-dashboard.html" class="nav-item nav-link">Dashboard</a>
+                        <a href="billing.html" class="nav-item nav-link">Billing</a>
+                        <a href="bills-history.html" class="nav-item nav-link active">Bills History</a>
+                    </div>
+                    <button class="btn btn-outline-light" onclick="handleRestaurantLogout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </button>
+                </div>
+            </nav>
+
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Bills History</h1>
+                    <p class="text-white mb-3">View and manage all billing records</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bills History -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                
+                <!-- Statistics -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3 id="total-bills-count">0</h3>
+                            <p>Total Bills</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3 id="total-revenue">₹0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3 id="average-bill-amount">₹0</h3>
+                            <p>Average Bill</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3 id="today-bills-count">0</h3>
+                            <p>Today's Bills</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-section">
+                    <div class="row align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Date From:</label>
+                            <input type="date" class="form-control" id="filter-date-from">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date To:</label>
+                            <input type="date" class="form-control" id="filter-date-to">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Payment Method:</label>
+                            <select class="form-select" id="filter-payment">
+                                <option value="">All Methods</option>
+                                <option value="cash">Cash</option>
+                                <option value="card">Card</option>
+                                <option value="upi">UPI</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100" onclick="applyFilters()">
+                                <i class="fas fa-filter me-2"></i>Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="search-box" 
+                                   placeholder="🔍 Search by bill number, customer name, phone...">
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-outline-secondary" onclick="clearFilters()">
+                                <i class="fas fa-times me-2"></i>Clear Filters
+                            </button>
+                            <button class="btn btn-success export-btn" onclick="exportToCSV()">
+                                <i class="fas fa-download me-2"></i>Export CSV
+                            </button>
+                            <button class="btn btn-info export-btn" onclick="printAllBills()">
+                                <i class="fas fa-print me-2"></i>Print All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bills List -->
+                <div id="bills-container">
+                    <div class="no-bills">
+                        <i class="fas fa-receipt fa-5x mb-3" style="color: #ddd;"></i>
+                        <h4>No bills found</h4>
+                        <p>Start creating bills from the billing page</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Food-Dynasty</h4>
+                        <a class="btn btn-link" href="">About Us</a>
+                        <a class="btn btn-link" href="">Contact Us</a>
+                        <a class="btn btn-link" href="">Privacy Policy</a>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>7th Street, Bagalkot</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+91 7777777777</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>fooddynasty@gmail.com</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Opening</h4>
+                        <h5 class="text-light fw-normal">Monday - Saturday</h5>
+                        <p>07AM - 11PM</p>
+                        <h5 class="text-light fw-normal">Sunday</h5>
+                        <p>08AM - 11PM</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Quick Links</h4>
+                        <a href="billing.html" class="btn btn-link">Create New Bill</a>
+                        <a href="bills-history.html" class="btn btn-link">View History</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+
+    <script>
+        // Restaurant logout function
+        function handleRestaurantLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('restaurantLoggedIn');
+                localStorage.removeItem('restaurantLoginTime');
+                window.location.href = 'restaurant-login.html';
+            }
+        }
+
+        // Check restaurant authentication
+        function checkRestaurantAuth() {
+            const isLoggedIn = localStorage.getItem('restaurantLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                window.location.href = 'restaurant-login.html';
+            }
+        }
+
+        // Check auth on page load
+        checkRestaurantAuth();
+    </script>
+
+    <script>
+        let allBills = [];
+        let filteredBills = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        // Load bills on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBills();
+            setupSearchListener();
+            
+            // Set default date range (last 30 days)
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('filter-date-to').value = today.toISOString().split('T')[0];
+            document.getElementById('filter-date-from').value = thirtyDaysAgo.toISOString().split('T')[0];
+        });
+
+        function loadBills() {
+            // Show loading state
+            const container = document.getElementById('bills-container');
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="text-muted">Loading bills from server...</p>
+                </div>
+            `;
+            
+            // Fetch bills from Google Sheets using JSONP to avoid CORS
+            const apiUrl = 'https://script.google.com/macros/s/AKfycby-uU5nRZaNp17qXoLdGIMS8qhlBbovfCKciQh_Y3NKFalZV2MGiw3Qmsc751-WTqayYw/exec';
+            
+            // Create JSONP callback
+            window.handleBillsResponse = function(data) {
+                if (data.success) {
+                    allBills = data.bills || [];
+                    
+                    // Sort by date (newest first)
+                    allBills.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+                    
+                    // Also save to localStorage as backup
+                    localStorage.setItem('restaurant_bills', JSON.stringify(allBills));
+                    
+                    filteredBills = [...allBills];
+                    
+                    updateStatistics();
+                    renderBills();
+                } else {
+                    throw new Error(data.message || 'Failed to load bills');
+                }
+            };
+            
+            // Create script tag for JSONP request
+            const script = document.createElement('script');
+            script.src = apiUrl + '?action=getBills&callback=handleBillsResponse';
+            script.onerror = function() {
+                console.error('Error loading bills from server');
+                
+                // Fallback to localStorage
+                console.log('Falling back to localStorage...');
+                allBills = JSON.parse(localStorage.getItem('restaurant_bills') || '[]');
+                
+                allBills.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+                
+                filteredBills = [...allBills];
+                
+                updateStatistics();
+                renderBills();
+                
+                // Show warning after render
+                setTimeout(() => {
+                    const warningDiv = document.createElement('div');
+                    warningDiv.className = 'alert alert-warning mb-3';
+                    warningDiv.innerHTML = `
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Using offline data.</strong> Could not connect to server. Showing bills from local storage.
+                    `;
+                    container.insertBefore(warningDiv, container.firstChild);
+                }, 100);
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        function updateStatistics() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayBills = allBills.filter(b => b.date === today);
+            
+            const totalRevenue = allBills.reduce((sum, bill) => sum + bill.total, 0);
+            const avgBill = allBills.length > 0 ? totalRevenue / allBills.length : 0;
+            
+            document.getElementById('total-bills-count').textContent = allBills.length;
+            document.getElementById('total-revenue').textContent = '₹' + totalRevenue.toFixed(2);
+            document.getElementById('average-bill-amount').textContent = '₹' + avgBill.toFixed(2);
+            document.getElementById('today-bills-count').textContent = todayBills.length;
+        }
+
+        function renderBills() {
+            const container = document.getElementById('bills-container');
+            
+            if (filteredBills.length === 0) {
+                container.innerHTML = `
+                    <div class="no-bills">
+                        <i class="fas fa-receipt fa-5x mb-3" style="color: #ddd;"></i>
+                        <h4>No bills found</h4>
+                        <p>Try adjusting your filters or search criteria</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Pagination
+            const totalPages = Math.ceil(filteredBills.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedBills = filteredBills.slice(startIndex, endIndex);
+
+            const html = paginatedBills.map(bill => {
+                const itemsHtml = bill.items.map(item => `
+                    <div class="item-row">
+                        <div>
+                            <strong>${item.name}</strong>
+                            <small class="text-muted"> x${item.quantity}</small>
+                        </div>
+                        <div>₹${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                `).join('');
+
+                const paymentClass = `payment-${bill.paymentMethod}`;
+                
+                return `
+                    <div class="bill-card">
+                        <div class="bill-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="bill-number">${bill.billNumber}</div>
+                                    <div class="mt-2">
+                                        <span class="date-badge">
+                                            <i class="far fa-calendar me-1"></i>${bill.date}
+                                        </span>
+                                        <span class="date-badge">
+                                            <i class="far fa-clock me-1"></i>${bill.time}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="bill-status status-paid">PAID</span>
+                                    <div class="mt-2">
+                                        <span class="payment-badge ${paymentClass}">
+                                            ${bill.paymentMethod.toUpperCase()}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-user me-2"></i>Customer Details</h6>
+                                <p class="mb-1"><strong>Name:</strong> ${bill.customerName}</p>
+                                ${bill.customerPhone ? `<p class="mb-1"><strong>Phone:</strong> ${bill.customerPhone}</p>` : ''}
+                                ${bill.tableNumber ? `<p class="mb-1"><strong>Table:</strong> ${bill.tableNumber}</p>` : ''}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-chart-line me-2"></i>Bill Summary</h6>
+                                <p class="mb-1"><strong>Items:</strong> ${bill.items.length} items</p>
+                                <p class="mb-1"><strong>Subtotal:</strong> ₹${bill.subtotal.toFixed(2)}</p>
+                                <p class="mb-1"><strong>GST (${bill.gstPercent}%):</strong> ₹${bill.gstAmount.toFixed(2)}</p>
+                                ${bill.discountPercent > 0 ? `<p class="mb-1 text-danger"><strong>Discount (${bill.discountPercent}%):</strong> -₹${bill.discountAmount.toFixed(2)}</p>` : ''}
+                                <p class="mb-0"><strong>Total:</strong> <span class="text-success" style="font-size: 18px;">₹${bill.total.toFixed(2)}</span></p>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <h6><i class="fas fa-shopping-basket me-2"></i>Items Ordered (${bill.items.length})</h6>
+                            <div class="items-list">
+                                ${itemsHtml}
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary print-bill-btn" onclick="printBill('${bill.billNumber}')">
+                                <i class="fas fa-print me-1"></i>Print Bill
+                            </button>
+                            <button class="btn btn-sm btn-outline-info print-bill-btn" onclick="viewBillDetails('${bill.billNumber}')">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger print-bill-btn" onclick="deleteBill('${bill.billNumber}')">
+                                <i class="fas fa-trash me-1"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+            
+            // Render pagination controls
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const container = document.getElementById('bills-container');
+            
+            if (totalPages <= 1) return;
+            
+            const paginationHtml = `
+                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <div class="text-muted">
+                        Showing ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, filteredBills.length)} of ${filteredBills.length} bills
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <button class="btn btn-outline-primary" disabled>
+                            Page ${currentPage} of ${totalPages}
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML += paginationHtml;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredBills.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            renderBills();
+            
+            // Scroll to top of bills container
+            document.getElementById('bills-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function applyFilters() {
+            currentPage = 1; // Reset to first page when filtering
+            const dateFrom = document.getElementById('filter-date-from').value;
+            const dateTo = document.getElementById('filter-date-to').value;
+            const paymentMethod = document.getElementById('filter-payment').value;
+            const searchQuery = document.getElementById('search-box').value.toLowerCase();
+
+            filteredBills = allBills.filter(bill => {
+                // Date filter
+                if (dateFrom && bill.date < dateFrom) return false;
+                if (dateTo && bill.date > dateTo) return false;
+                
+                // Payment method filter
+                if (paymentMethod && bill.paymentMethod !== paymentMethod) return false;
+                
+                // Search filter
+                if (searchQuery) {
+                    const searchFields = [
+                        bill.billNumber.toLowerCase(),
+                        bill.customerName.toLowerCase(),
+                        bill.customerPhone || '',
+                        bill.tableNumber || ''
+                    ].join(' ');
+                    
+                    if (!searchFields.includes(searchQuery)) return false;
+                }
+                
+                return true;
+            });
+
+            renderBills();
+        }
+
+        function setupSearchListener() {
+            let searchTimeout;
+            document.getElementById('search-box').addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    applyFilters();
+                }, 300);
+            });
+        }
+
+        function clearFilters() {
+            document.getElementById('filter-date-from').value = '';
+            document.getElementById('filter-date-to').value = '';
+            document.getElementById('filter-payment').value = '';
+            document.getElementById('search-box').value = '';
+            
+            currentPage = 1; // Reset to first page
+            filteredBills = [...allBills];
+            renderBills();
+        }
+
+        function printBill(billNumber) {
+            const bill = allBills.find(b => b.billNumber === billNumber);
+            if (!bill) return;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Bill - ${billNumber}</title>
+                    <style>
+                        body { font-family: monospace; max-width: 300px; margin: 20px auto; }
+                        .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
+                        .details { margin: 10px 0; }
+                        .row { display: flex; justify-content: space-between; padding: 5px 0; }
+                        .items { border-top: 1px dashed #000; border-bottom: 1px dashed #000; margin: 10px 0; padding: 10px 0; }
+                        .total { font-size: 18px; font-weight: bold; margin-top: 10px; }
+                        .footer { text-align: center; margin-top: 20px; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2>FOOD-DYNASTY</h2>
+                        <p>7th Street, Bagalkot<br>+91 7777777777</p>
+                    </div>
+                    
+                    <div class="details">
+                        <div class="row"><span>Bill No:</span><strong>${bill.billNumber}</strong></div>
+                        <div class="row"><span>Date:</span><span>${bill.date}</span></div>
+                        <div class="row"><span>Time:</span><span>${bill.time}</span></div>
+                        <div class="row"><span>Customer:</span><span>${bill.customerName}</span></div>
+                        ${bill.tableNumber ? `<div class="row"><span>Table:</span><span>${bill.tableNumber}</span></div>` : ''}
+                    </div>
+                    
+                    <div class="items">
+                        <h4>Items:</h4>
+                        ${bill.items.map(item => `
+                            <div class="row">
+                                <span>${item.name} x${item.quantity}</span>
+                                <span>₹${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="details">
+                        <div class="row"><span>Subtotal:</span><span>₹${bill.subtotal.toFixed(2)}</span></div>
+                        <div class="row"><span>GST (${bill.gstPercent}%):</span><span>₹${bill.gstAmount.toFixed(2)}</span></div>
+                        ${bill.discountPercent > 0 ? `<div class="row"><span>Discount (${bill.discountPercent}%):</span><span>-₹${bill.discountAmount.toFixed(2)}</span></div>` : ''}
+                        <div class="row total"><span>TOTAL:</span><span>₹${bill.total.toFixed(2)}</span></div>
+                        <div class="row"><span>Payment:</span><span>${bill.paymentMethod.toUpperCase()}</span></div>
+                    </div>
+                    
+                    <div class="footer">
+                        <p>*** THANK YOU ***<br>Visit Again!</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
+        }
+
+        function viewBillDetails(billNumber) {
+            const bill = allBills.find(b => b.billNumber === billNumber);
+            if (!bill) return;
+
+            alert(`Bill Details:\n\n` +
+                  `Bill Number: ${bill.billNumber}\n` +
+                  `Date: ${bill.date} ${bill.time}\n` +
+                  `Customer: ${bill.customerName}\n` +
+                  `Phone: ${bill.customerPhone || 'N/A'}\n` +
+                  `Table: ${bill.tableNumber || 'N/A'}\n` +
+                  `Items: ${bill.items.length}\n` +
+                  `Total: ₹${bill.total.toFixed(2)}\n` +
+                  `Payment: ${bill.paymentMethod.toUpperCase()}`);
+        }
+
+        function deleteBill(billNumber) {
+            if (!confirm('Are you sure you want to delete this bill?\n\nBill: ' + billNumber)) {
+                return;
+            }
+
+            allBills = allBills.filter(b => b.billNumber !== billNumber);
+            localStorage.setItem('restaurant_bills', JSON.stringify(allBills));
+            
+            loadBills();
+            alert('✅ Bill deleted successfully!');
+        }
+
+        function exportToCSV() {
+            if (filteredBills.length === 0) {
+                alert('No bills to export!');
+                return;
+            }
+
+            const headers = ['Bill Number', 'Date', 'Time', 'Customer', 'Phone', 'Table', 'Items', 'Subtotal', 'GST%', 'GST Amount', 'Discount%', 'Discount Amount', 'Total', 'Payment'];
+            
+            const rows = filteredBills.map(bill => [
+                `"${bill.billNumber}"`,
+                `"${bill.date}"`,
+                `"${bill.time}"`,
+                `"${bill.customerName}"`,
+                `"${bill.customerPhone || ''}"`,
+                `"${bill.tableNumber || ''}"`,
+                bill.items.length,
+                bill.subtotal.toFixed(2),
+                bill.gstPercent,
+                bill.gstAmount.toFixed(2),
+                bill.discountPercent,
+                bill.discountAmount.toFixed(2),
+                bill.total.toFixed(2),
+                `"${bill.paymentMethod}"`
+            ]);
+
+            const csv = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bills-export-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            alert(`✅ Exported ${filteredBills.length} bills to CSV!`);
+        }
+
+        function printAllBills() {
+            if (filteredBills.length === 0) {
+                alert('No bills to print!');
+                return;
+            }
+
+            window.print();
+        }
+    </script>
+</body>
+
+</html>

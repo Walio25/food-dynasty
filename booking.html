@@ -28,6 +28,9 @@
     
     <!-- Authentication Stylesheet -->
     <link href="css/auth.css" rel="stylesheet">
+    
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body>
@@ -143,9 +146,7 @@
         <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
             <div class="row g-0">
                 <div class="col-md-6">
-                    
-                        <img class="flex-shrink-0 img-fluid rounded" src="img/indoor.jpg" alt="" style="width: 800px;">
-                
+                    <img class="img-fluid w-100 h-100" src="img/indoor.jpg" alt="" style="object-fit: cover;">
                 </div>
                 <div class="col-md-6 bg-dark d-flex align-items-center">
                     <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
@@ -194,8 +195,20 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="datetime-local" class="form-control" id="booking-datetime" placeholder="Date & Time" required />
-                                        <label for="booking-datetime">Date & Time</label>
+                                        <input type="tel" class="form-control" id="booking-phone" placeholder="Your Phone" required>
+                                        <label for="booking-phone">Your Phone</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="date" class="form-control" id="booking-date" placeholder="Date" required />
+                                        <label for="booking-date">Select Date</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="time" class="form-control" id="booking-time" placeholder="Time" required />
+                                        <label for="booking-time">Select Time</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -220,35 +233,9 @@
                                         <label for="booking-message">Special Request</label>
                                     </div>
                                 </div>
-                                
-                                <!-- CAPTCHA Section -->
                                 <div class="col-12">
-                                    <div class="captcha-container p-3 border rounded bg-light">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-6">
-                                                <label for="captcha-input" class="form-label fw-bold">Security Verification:</label>
-                                                <div class="d-flex align-items-center gap-3">
-                                                    <div class="captcha-display bg-white p-2 border rounded text-center" style="min-width: 120px; font-family: monospace; font-size: 18px; font-weight: bold; letter-spacing: 3px; background: linear-gradient(45deg, #f0f0f0, #ffffff);" id="captcha-display">
-                                                        <!-- CAPTCHA will be generated here -->
-                                                    </div>
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="generateCaptcha()" title="Refresh CAPTCHA">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-floating">
-                                                    <input type="text" class="form-control" id="captcha-input" placeholder="Enter CAPTCHA" required>
-                                                    <label for="captcha-input">Enter the code above</label>
-                                                </div>
-                                                <div id="captcha-error" class="text-danger small mt-1 d-none">
-                                                    <i class="fas fa-exclamation-triangle"></i> CAPTCHA verification failed. Please try again.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div class="g-recaptcha" data-sitekey="6LeQf3UsAAAAANIpwM5O4J3lerYr2MACYIK2MShO"></div>
                                 </div>
-                                
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit" id="book-now-btn">
                                         <span class="btn-text">
@@ -343,6 +330,7 @@
     
     <script src="js/main.js"></script>
     <script src="js/email-service.js"></script>
+    <script src="js/booking-forms-service.js"></script>
     
     <!-- Authentication Javascript -->
     <script src="js/header-auth.js"></script>
@@ -414,10 +402,22 @@
                     // Use form data directly (no authentication required)
                     formData.userName = formData.name;
                     
+                    // Add phone number if field exists
+                    const phoneInput = document.getElementById('booking-phone');
+                    if (phoneInput) {
+                        formData.phone = phoneInput.value.trim();
+                    }
+                    
                     // Save booking to localStorage
                     const booking = this.saveBooking(formData);
                     
-                    // Send booking emails
+                    // Submit to Google Form (if configured)
+                    if (typeof window.bookingFormsService !== 'undefined') {
+                        const formResult = await window.bookingFormsService.submitBooking(booking);
+                        console.log('Google Form submission:', formResult.success ? 'success' : 'failed');
+                    }
+                    
+                    // Send booking emails (if configured)
                     const emailResults = await this.sendBookingEmails(booking);
                     
                     // Show success message
@@ -434,12 +434,18 @@
             }
 
             getFormData() {
-                const datetimeValue = document.getElementById('booking-datetime').value.trim();
+                const date = document.getElementById('booking-date').value.trim();
+                const time = document.getElementById('booking-time').value.trim();
+                // Combine date and time for datetime field
+                const datetime = date && time ? `${date}T${time}` : '';
                 
                 return {
                     name: document.getElementById('booking-name').value.trim(),
                     email: document.getElementById('booking-email').value.trim(),
-                    datetime: datetimeValue,
+                    phone: document.getElementById('booking-phone').value.trim(),
+                    date: date,
+                    time: time,
+                    datetime: datetime,
                     people: document.getElementById('booking-people').value,
                     message: document.getElementById('booking-message').value.trim()
                 };
@@ -450,7 +456,9 @@
 
                 if (!formData.name) errors.push('Name is required');
                 if (!formData.email) errors.push('Email is required');
-                if (!formData.datetime) errors.push('Date & Time is required');
+                if (!formData.phone) errors.push('Phone number is required');
+                if (!formData.date) errors.push('Date is required');
+                if (!formData.time) errors.push('Time is required');
                 if (!formData.people) errors.push('Number of people is required');
 
                 // Email validation
@@ -469,8 +477,9 @@
                 }
 
                 // CAPTCHA validation
-                if (!validateCaptcha()) {
-                    errors.push('Please complete the security verification correctly');
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    errors.push('Please complete the CAPTCHA verification');
                 }
 
                 if (errors.length > 0) {
@@ -576,22 +585,22 @@
                 const form = document.getElementById('booking-form');
                 if (form) {
                     form.reset();
-                    // Reset CAPTCHA
-                    if (typeof generateCaptcha === 'function') {
-                        generateCaptcha();
-                    }
+                }
+                // Reset CAPTCHA
+                if (typeof grecaptcha !== 'undefined') {
+                    grecaptcha.reset();
                 }
             }
 
             // Send booking emails
             async sendBookingEmails(booking) {
                 try {
-                    // Check if EmailJS service is available
+                    // Check if email service is available
                     if (typeof window.emailService === 'undefined') {
                         return { customer: { success: false, error: 'Email service not available' }, restaurant: { success: false, error: 'Email service not available' } };
                     }
 
-                    // Send both customer and restaurant emails
+                    // Send both customer and restaurant emails via Google Apps Script
                     const emailResults = await window.emailService.sendBookingEmails(booking);
                     return emailResults;
 
@@ -648,83 +657,6 @@
                     updateAuthUI();
                 }
             }, 400);
-        });
-        
-        // CAPTCHA functionality
-        let currentCaptcha = '';
-
-        function generateCaptcha() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-            let captcha = '';
-            for (let i = 0; i < 6; i++) {
-                captcha += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            currentCaptcha = captcha;
-            
-            // Display CAPTCHA with some visual styling
-            const captchaDisplay = document.getElementById('captcha-display');
-            if (captchaDisplay) {
-                captchaDisplay.textContent = captcha;
-                // Add some random colors to make it harder for bots
-                const colors = ['#333', '#666', '#999', '#007bff', '#28a745', '#dc3545'];
-                captchaDisplay.style.color = colors[Math.floor(Math.random() * colors.length)];
-            }
-            
-            // Clear previous input and error
-            const captchaInput = document.getElementById('captcha-input');
-            const captchaError = document.getElementById('captcha-error');
-            if (captchaInput) captchaInput.value = '';
-            if (captchaError) captchaError.classList.add('d-none');
-        }
-
-        function validateCaptcha() {
-            const captchaInput = document.getElementById('captcha-input');
-            const captchaError = document.getElementById('captcha-error');
-            
-            if (!captchaInput || !captchaError) return false;
-            
-            const userInput = captchaInput.value.trim();
-            const isValid = userInput === currentCaptcha;
-            
-            if (!isValid) {
-                captchaError.classList.remove('d-none');
-                captchaInput.classList.add('is-invalid');
-                generateCaptcha(); // Generate new CAPTCHA on failure
-                return false;
-            } else {
-                captchaError.classList.add('d-none');
-                captchaInput.classList.remove('is-invalid');
-                return true;
-            }
-        }
-
-        // Initialize CAPTCHA when page loads
-        $(document).ready(function() {
-            // Generate initial CAPTCHA
-            generateCaptcha();
-            
-            // Add CAPTCHA validation to form submission
-            const bookingForm = document.getElementById('booking-form');
-            if (bookingForm) {
-                bookingForm.addEventListener('submit', function(e) {
-                    if (!validateCaptcha()) {
-                        e.preventDefault();
-                        return false;
-                    }
-                });
-            }
-            
-            // Clear CAPTCHA error when user starts typing
-            const captchaInput = document.getElementById('captcha-input');
-            if (captchaInput) {
-                captchaInput.addEventListener('input', function() {
-                    const captchaError = document.getElementById('captcha-error');
-                    if (captchaError) {
-                        captchaError.classList.add('d-none');
-                    }
-                    this.classList.remove('is-invalid');
-                });
-            }
         });
     </script>
 </body>

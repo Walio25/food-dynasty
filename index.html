@@ -30,6 +30,9 @@
    
     <link href="css/style.css" rel="stylesheet">
     <link href="css/auth.css" rel="stylesheet">
+    
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body>
@@ -59,43 +62,27 @@
                         <a href="about.html" class="nav-item nav-link">About</a>
                         <a href="service.html" class="nav-item nav-link">Service</a>
                         <a href="menu.html" class="nav-item nav-link">Menu</a>
+                        <a href="order.html" class="nav-item nav-link">Order Online</a>
                         <a href="team.html" class="nav-item nav-link">Our Team</a>
                         <a href="contact.html" class="nav-item nav-link">Contact</a>
-                        <a href="restaurant-login.html" class="nav-item nav-link">Restaurant Login</a>
                         
                         <!-- Authentication Section - Inside Navbar -->
                         <div id="auth-buttons" class="navbar-nav">
                             <!-- Show when not logged in -->
                             <div id="login-section" class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="loginDropdown">
-                                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                                    <i class="fas fa-sign-in-alt me-1"></i>Account
                                 </a>
                                 <div class="dropdown-menu header-login-dropdown">
                                     <div id="header-login-container">
-                                        <!-- Simple Login Form -->
-                                        <div id="header-login-form">
-                                            <h6 class="mb-3">Welcome to Food Dynasty</h6>
-                                            <form id="header-login-form-element">
-                                                <div class="mb-3">
-                                                    <input type="text" class="form-control" id="headerUserName" 
-                                                           placeholder="Enter your name" required>
-                                                    <small class="text-muted">Your display name</small>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <input type="email" class="form-control" id="headerUserEmail" 
-                                                           placeholder="Enter your email" required>
-                                                    <small class="text-muted">We'll remember you for 24 hours</small>
-                                                </div>
-                                                <button type="submit" class="btn btn-primary w-100" id="header-login-btn">
-                                                    <i class="fas fa-sign-in-alt me-1"></i>Login
-                                                </button>
-                                            </form>
-                                        </div>
-
-                                        <!-- Error Message -->
-                                        <div id="header-error-message" class="alert alert-danger d-none p-2 mt-2" role="alert">
-                                            <small><i class="fas fa-exclamation-triangle me-1"></i>
-                                            <span id="header-error-text"></span></small>
+                                        <!-- Access Links -->
+                                        <div class="text-center">
+                                            <a href="login.html" class="btn btn-primary btn-sm w-100 mb-2">
+                                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                                            </a>
+                                            <a href="register.html" class="btn btn-outline-primary btn-sm w-100">
+                                                <i class="fas fa-user-plus me-1"></i>Create Account
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -116,6 +103,12 @@
                                     </a>
                                     <a href="booking.html" class="dropdown-item">
                                         <i class="fas fa-calendar-alt me-2"></i>Book Table
+                                    </a>
+                                    <a href="my-orders.html" class="dropdown-item">
+                                        <i class="fas fa-shopping-bag me-2"></i>My Orders
+                                    </a>
+                                    <a href="rewards.html" class="dropdown-item">
+                                        <i class="fas fa-gift me-2"></i>Rewards
                                     </a>
                                     <div class="dropdown-divider"></div>
                                     <a href="#" class="dropdown-item" id="header-logout-btn">
@@ -595,55 +588,100 @@
         <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
             <div class="row g-0">
                 <div class="col-md-6">
-                    <img class="flex-shrink-0 img-fluid rounded" src="img/indoor.jpg" alt="" style="width: 800px;">
-                   
-
+                    <img class="img-fluid w-100 h-100" src="img/indoor.jpg" alt="" style="object-fit: cover;">
                 </div>
                 <div class="col-md-6 bg-dark d-flex align-items-center">
                     <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
                         <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
                         <h1 class="text-white mb-4">Book A Table Online</h1>
-                        <form>
+                        
+                        <!-- Success Message -->
+                        <div id="index-booking-success" class="alert alert-success d-none" role="alert">
+                            <h4 class="alert-heading">
+                                <i class="fas fa-check-circle me-2"></i>Booking Confirmed!
+                            </h4>
+                            <p>Your table reservation has been successfully submitted.</p>
+                            <div class="alert alert-info py-2 mt-3 mb-3">
+                                <small><i class="fas fa-envelope me-2"></i>Confirmation email has been sent to your email address.</small>
+                            </div>
+                            <hr>
+                            <button class="btn btn-outline-success" onclick="resetIndexBookingForm()">
+                                <i class="fas fa-plus me-2"></i>Book Another
+                            </button>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div id="index-booking-error" class="alert alert-danger d-none" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="index-booking-error-text">Please correct the errors and try again.</span>
+                        </div>
+
+                        <form id="index-booking-form">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control" id="name" placeholder="Your Name">
-                                        <label for="name">Your Name</label>
+                                        <input type="text" class="form-control" id="index-name" placeholder="Your Name" required>
+                                        <label for="index-name">Your Name</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="email" class="form-control" id="email" placeholder="Your Email">
-                                        <label for="email">Your Email</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating date" id="date3" data-target-input="nearest">
-                                        <input type="text" class="form-control datetimepicker-input" id="datetime" placeholder="Date & Time" data-target="#date3" data-toggle="datetimepicker" />
-                                        <label for="datetime">Date & Time</label>
+                                        <input type="email" class="form-control" id="index-email" placeholder="Your Email" required>
+                                        <label for="index-email">Your Email</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <select class="form-select" id="select1">
-                                          <option value="1">People 1</option>
-                                          <option value="2">People 2</option>
-                                          <option value="3">People 3</option>
-                                          <option value="3">People 4</option>
-                                          <option value="3">People 5</option>
-                                          <option value="3">People 6</option>
+                                        <input type="tel" class="form-control" id="index-phone" placeholder="Your Phone" required>
+                                        <label for="index-phone">Your Phone</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="date" class="form-control" id="index-date" placeholder="Date" required />
+                                        <label for="index-date">Select Date</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="time" class="form-control" id="index-time" placeholder="Time" required />
+                                        <label for="index-time">Select Time</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="index-people" required>
+                                            <option value="">Select People</option>
+                                            <option value="1">1 Person</option>
+                                            <option value="2">2 People</option>
+                                            <option value="3">3 People</option>
+                                            <option value="4">4 People</option>
+                                            <option value="5">5 People</option>
+                                            <option value="6">6 People</option>
+                                            <option value="7">7 People</option>
+                                            <option value="8">8 People</option>
                                         </select>
-                                        <label for="select1">No Of People</label>
-                                      </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-floating">
-                                        <textarea class="form-control" placeholder="Special Request" id="message" style="height: 100px"></textarea>
-                                        <label for="message">Special Request</label>
+                                        <label for="index-people">No Of People</label>
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <button class="btn btn-primary w-100 py-3" type="submit">Book Now</button>
+                                    <div class="form-floating">
+                                        <textarea class="form-control" placeholder="Special Request" id="index-message" style="height: 100px"></textarea>
+                                        <label for="index-message">Special Request</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="g-recaptcha" data-sitekey="6LeQf3UsAAAAANIpwM5O4J3lerYr2MACYIK2MShO"></div>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100 py-3" type="submit" id="index-book-now-btn">
+                                        <span class="btn-text">
+                                            <i class="fas fa-calendar-check me-2"></i>Book Now
+                                        </span>
+                                        <span class="btn-spinner d-none">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>Processing...
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -741,6 +779,7 @@
                         <a class="btn btn-link" href="">Reservation</a>
                         <a class="btn btn-link" href="">Privacy Policy</a>
                         <a class="btn btn-link" href="">Terms & Condition</a>
+                        <a class="btn btn-link" href="restaurant-access.html"><i class="fas fa-lock me-1"></i>Staff Login</a>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
@@ -803,12 +842,111 @@
     
     <script src="js/main.js"></script>
     <script src="js/header-auth.js"></script>
+    <script src="js/booking-forms-service.js"></script>
     <script>
-        // Authentication functionality is handled by header-auth.js
+        // Index page booking form handler
+        const indexBookingForm = document.getElementById('index-booking-form');
+        const indexBookNowBtn = document.getElementById('index-book-now-btn');
+        const indexSuccessDiv = document.getElementById('index-booking-success');
+        const indexErrorDiv = document.getElementById('index-booking-error');
+        const indexErrorText = document.getElementById('index-booking-error-text');
+
+        // Reset form function
+        function resetIndexBookingForm() {
+            indexBookingForm.reset();
+            indexSuccessDiv.classList.add('d-none');
+            indexErrorDiv.classList.add('d-none');
+            indexBookNowBtn.disabled = false;
+            // Reset CAPTCHA
+            if (typeof grecaptcha !== 'undefined') {
+                grecaptcha.reset();
+            }
+        }
+
+        indexBookingForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Hide previous messages
+            indexSuccessDiv.classList.add('d-none');
+            indexErrorDiv.classList.add('d-none');
+            
+            // Get form data
+            const name = document.getElementById('index-name').value.trim();
+            const email = document.getElementById('index-email').value.trim();
+            const phone = document.getElementById('index-phone').value.trim();
+            const date = document.getElementById('index-date').value;
+            const time = document.getElementById('index-time').value;
+            const people = document.getElementById('index-people').value;
+            const message = document.getElementById('index-message').value.trim();
+            
+            // Validate
+            if (!name || !email || !phone || !date || !time || !people) {
+                indexErrorText.textContent = 'Please fill in all required fields';
+                indexErrorDiv.classList.remove('d-none');
+                return;
+            }
+
+            // CAPTCHA validation
+            const recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+                indexErrorText.textContent = 'Please complete the CAPTCHA verification';
+                indexErrorDiv.classList.remove('d-none');
+                return;
+            }
+
+            // Combine date and time
+            const datetime = `${date} ${time}`;
+            
+            const formData = {
+                name: name,
+                email: email,
+                phone: phone,
+                datetime: datetime,
+                people: people,
+                message: message || 'None'
+            };
+            
+            // Show loading
+            indexBookNowBtn.disabled = true;
+            const btnText = indexBookNowBtn.querySelector('.btn-text');
+            const btnSpinner = indexBookNowBtn.querySelector('.btn-spinner');
+            btnText.classList.add('d-none');
+            btnSpinner.classList.remove('d-none');
+            
+            try {
+                // Initialize booking service if not exists
+                if (!window.bookingFormsService) {
+                    window.bookingFormsService = new BookingFormsService();
+                }
+                
+                // Submit booking
+                const result = await window.bookingFormsService.submitBooking(formData);
+                
+                if (result.success) {
+                    // Show success message
+                    indexSuccessDiv.classList.remove('d-none');
+                    
+                    // Scroll to success message
+                    indexSuccessDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    throw new Error(result.error || 'Booking failed');
+                }
+            } catch (error) {
+                console.error('Booking error:', error);
+                indexErrorText.textContent = error.message || 'Failed to submit booking. Please try again.';
+                indexErrorDiv.classList.remove('d-none');
+                
+                // Scroll to error message
+                indexErrorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } finally {
+                // Hide loading
+                indexBookNowBtn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnSpinner.classList.add('d-none');
+            }
+        });
     </script>
     
 </body>
 
-
 </html>
-

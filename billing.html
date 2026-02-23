@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Billing System - Food-Dynasty</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="description" content="Food Dynasty Restaurant Billing System - POS and Payment Management">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/restaurant.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/auth.css" rel="stylesheet">
+    
+    <style>
+        .menu-search {
+            position: relative;
+        }
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .search-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-item:hover {
+            background: #f8f9fa;
+        }
+        .search-item:last-child {
+            border-bottom: none;
+        }
+        .bill-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .bill-item:last-child {
+            border-bottom: none;
+        }
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .qty-btn:hover {
+            background: #FEA116;
+            color: white;
+            border-color: #FEA116;
+        }
+        .qty-input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .total-section {
+            background: linear-gradient(135deg, #FEA116 0%, #ff8800 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .payment-btn {
+            padding: 15px 10px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-align: center;
+        }
+        .payment-btn:hover, .payment-btn.active {
+            border-color: #FEA116;
+            background: #fff8f0;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(254, 161, 22, 0.3);
+        }
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .print-section {
+            display: none;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-section { display: block !important; }
+            .container-xxl { padding: 0 !important; }
+        }
+        .quick-add-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .quick-add-btn {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 13px;
+        }
+        .quick-add-btn:hover {
+            background: #FEA116;
+            color: white;
+            border-color: #FEA116;
+        }
+        .customer-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .billing-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #FEA116;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .menu-item-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu-item-card:hover {
+            border-color: #FEA116;
+            box-shadow: 0 4px 12px rgba(254, 161, 22, 0.2);
+            transform: translateX(5px);
+        }
+        .menu-item-info {
+            flex: 1;
+        }
+        .menu-item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+        .menu-item-category {
+            display: inline-block;
+            padding: 3px 10px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .menu-item-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #FEA116;
+            margin-right: 15px;
+        }
+        .add-item-btn {
+            background: linear-gradient(135deg, #FEA116 0%, #ff8800 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(254, 161, 22, 0.3);
+        }
+        .add-item-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(254, 161, 22, 0.5);
+        }
+        .category-badge {
+            background: #FEA116;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        #menu-items-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        #menu-items-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        #menu-items-container::-webkit-scrollbar-thumb {
+            background: #FEA116;
+            border-radius: 10px;
+        }
+        #menu-items-container::-webkit-scrollbar-thumb:hover {
+            background: #ff8800;
+        }
+        .confirmation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .confirmation-dialog {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-section { display: block !important; }
+            body { margin: 0; padding: 0; }
+        }
+        .error-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 9999;
+            display: none;
+            animation: slideInRight 0.3s ease;
+        }
+        .success-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 9999;
+            display: none;
+            animation: slideInRight 0.3s ease;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .offline-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #ff9800;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10000;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Authentication Check -->
+    <script>
+        // Check if user is logged in as restaurant staff
+        function checkRestaurantAuth() {
+            const isLoggedIn = localStorage.getItem('restaurantLoggedIn');
+            if (!isLoggedIn || isLoggedIn !== 'true') {
+                alert('⚠️ Access Denied!\n\nPlease login as restaurant staff to access the billing system.');
+                window.location.href = 'restaurant-login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // Run auth check immediately
+        if (!checkRestaurantAuth()) {
+            document.body.style.display = 'none';
+        }
+    </script>
+    
+    <div class="container-xxl bg-white p-0">
+        <!-- Spinner -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <div class="container-xxl position-relative p-0 no-print">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+                <a href="index.html" class="navbar-brand p-0">
+                    <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Food-Dynasty</h1>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav ms-auto py-0 pe-4">
+                        <a href="restaurant-dashboard.html" class="nav-item nav-link">Dashboard</a>
+                        <a href="billing.html" class="nav-item nav-link active">Billing</a>
+                        <a href="bills-history.html" class="nav-item nav-link">Bills History</a>
+                    </div>
+                    <button class="btn btn-outline-light" onclick="handleRestaurantLogout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </button>
+                </div>
+            </nav>
+
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-4 text-white mb-3 animated slideInDown">Billing System</h1>
+                    <p class="text-white-50 mb-0">Create bills, manage orders, and process payments</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing System -->
+        <div class="container-xxl py-5 no-print">
+            <div class="container">
+                
+                <!-- Stats Section -->
+                <div class="billing-stats">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Today's Sales</small>
+                                <h4 class="mb-0 text-success" id="today-sales">₹0</h4>
+                            </div>
+                            <i class="fas fa-rupee-sign fa-2x text-success"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Total Bills</small>
+                                <h4 class="mb-0 text-primary" id="total-bills">0</h4>
+                            </div>
+                            <i class="fas fa-receipt fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Average Bill</small>
+                                <h4 class="mb-0 text-warning" id="avg-bill">₹0</h4>
+                            </div>
+                            <i class="fas fa-chart-line fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Last Bill</small>
+                                <h4 class="mb-0 text-info" id="last-bill-time">--:--</h4>
+                            </div>
+                            <i class="fas fa-clock fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Left Section - Menu & Search -->
+                    <div class="col-lg-7 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-search me-2"></i>Search & Add Items</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Customer Info -->
+                                <div class="customer-display">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-2">
+                                            <label class="form-label mb-1"><small>Customer Name</small></label>
+                                            <input type="text" class="form-control form-control-sm" id="customer-name" 
+                                                   placeholder="Enter name (optional)">
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <label class="form-label mb-1"><small>Phone Number</small></label>
+                                            <input type="tel" class="form-control form-control-sm" id="customer-phone" 
+                                                   placeholder="Enter phone (optional)">
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <label class="form-label mb-1"><small>Table Number</small></label>
+                                            <input type="text" class="form-control form-control-sm" id="table-number" 
+                                                   placeholder="Table # (optional)">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Search Bar -->
+                                <div class="menu-search mb-3">
+                                    <input type="text" class="form-control form-control-lg" id="menu-search" 
+                                           placeholder="🔍 Search dishes by name... (e.g., Biryani, Paneer, Chicken)">
+                                    <div id="search-results" class="search-results" style="display: none;"></div>
+                                </div>
+
+                                <!-- Category Tabs -->
+                                <ul class="nav nav-pills mb-3" id="category-tabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="all-tab" data-category="all" type="button">All Items</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="breakfast-tab" data-category="breakfast" type="button">Breakfast</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="starter-tab" data-category="starter" type="button">Starters</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="veg-tab" data-category="veg" type="button">Veg Main</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="nonveg-tab" data-category="non-veg" type="button">Non-Veg</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="bread-tab" data-category="bread" type="button">Breads</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="chinese-tab" data-category="chinese" type="button">Chinese</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="beverage-tab" data-category="beverage" type="button">Beverages</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="dessert-tab" data-category="dessert" type="button">Desserts</button>
+                                    </li>
+                                </ul>
+
+                                <!-- Quick Add Buttons -->
+                                <div id="menu-items-container" style="max-height: 500px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Bills -->
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Bills (Today)</h5>
+                            </div>
+                            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                <div id="recent-bills-list">
+                                    <div class="text-center py-4">
+                                        <div class="spinner-border spinner-border-sm text-primary mb-2" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="text-muted mb-0"><small>Loading recent bills...</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Section - Current Bill -->
+                    <div class="col-lg-5 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Current Bill</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="bill-items" style="max-height: 400px; overflow-y: auto; min-height: 200px;">
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted mb-0">No items added yet</p>
+                                        <small class="text-muted">Search or select items from the menu</small>
+                                    </div>
+                                </div>
+
+                                <!-- Bill Summary -->
+                                <div class="mt-3 pt-3 border-top">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Subtotal:</span>
+                                        <strong id="bill-subtotal">₹0.00</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>
+                                            GST (<input type="number" id="gst-percent" value="5" min="0" max="28" 
+                                                   style="width: 50px; text-align: center;" class="border-0">%):
+                                        </span>
+                                        <strong id="bill-gst">₹0.00</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>
+                                            Discount (<input type="number" id="discount-percent" value="0" min="0" max="100" 
+                                                   style="width: 50px; text-align: center;" class="border-0">%):
+                                        </span>
+                                        <strong class="text-danger" id="bill-discount">-₹0.00</strong>
+                                    </div>
+                                </div>
+
+                                <!-- Total -->
+                                <div class="total-section">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h4 class="mb-0">Total Amount:</h4>
+                                        <h2 class="mb-0" id="bill-total">₹0.00</h2>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Methods -->
+                                <div class="mt-3">
+                                    <h6>Payment Method:</h6>
+                                    <div class="payment-methods">
+                                        <div class="payment-btn active" data-method="cash" onclick="selectPayment('cash')">
+                                            <i class="fas fa-money-bill-wave fa-2x text-success mb-2"></i>
+                                            <div><small>Cash</small></div>
+                                        </div>
+                                        <div class="payment-btn" data-method="card" onclick="selectPayment('card')">
+                                            <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
+                                            <div><small>Card</small></div>
+                                        </div>
+                                        <div class="payment-btn" data-method="upi" onclick="selectPayment('upi')">
+                                            <i class="fas fa-mobile-alt fa-2x text-warning mb-2"></i>
+                                            <div><small>UPI</small></div>
+                                        </div>
+                                        <div class="payment-btn" data-method="online" onclick="selectPayment('online')">
+                                            <i class="fas fa-laptop fa-2x text-info mb-2"></i>
+                                            <div><small>Online</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="mt-3 d-grid gap-2">
+                                    <button class="btn btn-success btn-lg" onclick="completeBill()">
+                                        <i class="fas fa-check-circle me-2"></i>Complete & Print Bill
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="clearBill()">
+                                        <i class="fas fa-trash me-2"></i>Clear Bill
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Print Section -->
+        <div class="print-section" id="print-section">
+            <div style="max-width: 300px; margin: 0 auto; font-family: monospace; font-size: 12px;">
+                <div style="text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
+                    <h2 style="margin: 5px 0;">FOOD-DYNASTY</h2>
+                    <p style="margin: 2px 0;">7th Street, Bagalkot</p>
+                    <p style="margin: 2px 0;">Phone: +91 7777777777</p>
+                    <p style="margin: 2px 0;">GSTIN: 29XXXXXXXXXXXXX</p>
+                </div>
+                
+                <div style="border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Bill No:</span>
+                        <strong id="print-bill-no">---</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Date:</span>
+                        <span id="print-date">---</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Time:</span>
+                        <span id="print-time">---</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;" id="print-customer-row">
+                        <span>Customer:</span>
+                        <span id="print-customer">Walk-in</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;" id="print-table-row">
+                        <span>Table:</span>
+                        <span id="print-table">---</span>
+                    </div>
+                </div>
+
+                <div style="border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #000;">
+                                <th style="text-align: left; padding: 5px 0;">Item</th>
+                                <th style="text-align: center;">Qty</th>
+                                <th style="text-align: right;">Price</th>
+                                <th style="text-align: right;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="print-items"></tbody>
+                    </table>
+                </div>
+
+                <div style="border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; padding: 2px 0;">
+                        <span>Subtotal:</span>
+                        <span id="print-subtotal">₹0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 2px 0;">
+                        <span id="print-gst-label">GST (5%):</span>
+                        <span id="print-gst">₹0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 2px 0;" id="print-discount-row">
+                        <span id="print-discount-label">Discount (0%):</span>
+                        <span id="print-discount">-₹0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 5px 0; font-size: 16px; font-weight: bold;">
+                        <span>TOTAL:</span>
+                        <span id="print-total">₹0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 2px 0;">
+                        <span>Payment Mode:</span>
+                        <span id="print-payment">CASH</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; padding-top: 10px;">
+                    <p style="margin: 5px 0;">*** THANK YOU ***</p>
+                    <p style="margin: 5px 0;">Visit Again!</p>
+                    <p style="margin: 5px 0; font-size: 10px;">Powered by Food-Dynasty POS</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="success-toast" class="success-toast">
+        <i class="fas fa-check-circle me-2"></i>
+        <span id="success-message">Success!</span>
+    </div>
+    <div id="error-toast" class="error-toast">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span id="error-message">Error occurred!</span>
+    </div>
+
+    <!-- Offline Banner -->
+    <div id="offline-banner" class="offline-banner">
+        <i class="fas fa-wifi-slash me-2"></i>
+        You are offline. Bills will be saved locally and synced when connection is restored.
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div id="confirmation-overlay" class="confirmation-overlay">
+        <div class="confirmation-dialog">
+            <i class="fas fa-question-circle fa-3x text-warning mb-3"></i>
+            <h5 id="confirm-title">Are you sure?</h5>
+            <p id="confirm-message" class="text-muted"></p>
+            <div class="d-flex gap-2 justify-content-center mt-4">
+                <button class="btn btn-outline-secondary" onclick="closeConfirmation()">Cancel</button>
+                <button class="btn btn-danger" id="confirm-btn" onclick="confirmAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/email-service.js"></script>
+    <script src="js/billing-system.js"></script>
+    
+    <script>
+        // Restaurant logout function
+        function handleRestaurantLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('restaurantLoggedIn');
+                localStorage.removeItem('restaurantLoginTime');
+                window.location.href = 'restaurant-login.html';
+            }
+        }
+
+        // Check restaurant authentication
+        function checkRestaurantAuth() {
+            const isLoggedIn = localStorage.getItem('restaurantLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                window.location.href = 'restaurant-login.html';
+            }
+        }
+
+        // Check auth on page load
+        checkRestaurantAuth();
+    </script>
+</body>
+
+</html>

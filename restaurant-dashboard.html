@@ -36,6 +36,29 @@
         .submission-card:hover {
             transform: translateX(5px);
         }
+        
+        /* Tab Styling */
+        .nav-tabs .nav-link {
+            color: #fff !important;
+            font-weight: bold;
+            border: none;
+            background-color: transparent;
+            padding: 12px 24px;
+            transition: all 0.3s;
+        }
+        .nav-tabs .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+            border: none;
+            border-radius: 0;
+        }
+        .card-header.bg-dark {
+            background-color: #212529 !important;
+        }
     </style>
 </head>
 
@@ -51,10 +74,18 @@
         <!-- Navbar -->
         <div class="container-xxl position-relative p-0">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
-                <a href="index.html" class="navbar-brand p-0">
+                <a href="restaurant-dashboard.html" class="navbar-brand p-0">
                     <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Food-Dynasty</h1>
                 </a>
-                <div class="ms-auto">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav ms-auto py-0 pe-4">
+                        <a href="restaurant-dashboard.html" class="nav-item nav-link active">Dashboard</a>
+                        <a href="billing.html" class="nav-item nav-link">Billing</a>
+                        <a href="bills-history.html" class="nav-item nav-link">Bills History</a>
+                    </div>
                     <button class="btn btn-outline-light" onclick="handleRestaurantLogout()">
                         <i class="fas fa-sign-out-alt me-2"></i>Logout
                     </button>
@@ -135,32 +166,163 @@
                     </div>
                 </div>
 
-                <!-- Contact Form Submissions -->
+                <!-- Data Viewer with Tabs -->
                 <div class="card mb-4">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="fas fa-inbox me-2"></i>Form Submissions
-                        </h5>
-                        <button class="btn btn-light btn-sm" onclick="refreshSubmissions()">
-                            <i class="fas fa-sync-alt me-1"></i>Refresh
-                        </button>
+                    <div class="card-header bg-dark text-white">
+                        <!-- Tab Navigation -->
+                        <ul class="nav nav-tabs card-header-tabs border-0" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="bookings-tab" data-bs-toggle="tab" href="#bookings-content" role="tab" onclick="switchDataView('bookings')">
+                                    <i class="fas fa-calendar-check me-2"></i>Table Bookings
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="contacts-tab" data-bs-toggle="tab" href="#contacts-content" role="tab" onclick="switchDataView('contacts')">
+                                    <i class="fas fa-inbox me-2"></i>Contact Form Submissions
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                     <div class="card-body">
-                        <!-- No Submissions Message -->
-                        <div id="no-submissions" class="text-center py-5 d-none">
-                            <i class="fas fa-inbox text-muted fa-3x mb-3"></i>
-                            <h5 class="text-muted">No Submissions Yet</h5>
-                            <p class="text-muted">Form submissions will appear here</p>
+                        <div class="tab-content">
+                            <!-- Bookings Tab Content -->
+                            <div class="tab-pane fade show active" id="bookings-content" role="tabpanel">
+                                <!-- Action Buttons -->
+                                <div class="d-flex justify-content-end mb-3">
+                                    <button class="btn btn-primary btn-sm me-2" onclick="bookingViewer.refresh()">
+                                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                                    </button>
+                                    <button class="btn btn-success btn-sm" onclick="bookingViewer.exportToCSV()">
+                                        <i class="fas fa-download me-1"></i>Export
+                                    </button>
+                                </div>
+                                
+                    <div class="bookings-section">
+                        <!-- Search and Filter -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="booking-search" 
+                                       placeholder="🔍 Search by name, email, phone..." 
+                                       onkeyup="bookingViewer.handleSearch(this.value)">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="date" class="form-control" id="filter-date" 
+                                       placeholder="Filter by date"
+                                       onchange="bookingViewer.applyFilters()">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-secondary w-100" onclick="document.getElementById('booking-search').value=''; document.getElementById('filter-date').value=''; bookingViewer.filteredBookings = [...bookingViewer.bookings]; bookingViewer.renderBookingsTable();">
+                                    <i class="fas fa-times me-1"></i>Clear
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Submissions List -->
-                        <div id="submissions-list">
-                            <!-- Submissions will be loaded here -->
+                        <!-- Bookings Stats -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-muted">Total Bookings</h6>
+                                        <h3 class="mb-0" id="bookings-total">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h6>Today's Bookings</h6>
+                                        <h3 class="mb-0" id="bookings-today">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h6>This Week</h6>
+                                        <h3 class="mb-0" id="bookings-week">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h6>This Month</h6>
+                                        <h3 class="mb-0" id="bookings-month">0</h3>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Pagination -->
-                        <div id="pagination-controls" class="d-flex justify-content-between align-items-center mt-4">
-                            <!-- Pagination will be added here -->
+                        <!-- Loading State -->
+                        <div id="bookings-loading" class="text-center py-5">
+                            <div class="spinner-border text-warning" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Loading bookings...</p>
+                        </div>
+
+                        <!-- No Bookings Message -->
+                        <div id="no-bookings" class="text-center py-5 d-none">
+                            <i class="fas fa-calendar-times text-muted fa-3x mb-3"></i>
+                            <h5 class="text-muted">No Bookings Yet</h5>
+                            <p class="text-muted">Table bookings will appear here</p>
+                        </div>
+
+                        <!-- Bookings Table -->
+                        <div id="bookings-table-container" class="d-none">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Customer</th>
+                                            <th>Contact</th>
+                                            <th>Date & Time</th>
+                                            <th>People</th>
+                                            <th>Status</th>
+                                            <th>Message</th>
+                                            <th>Manage Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bookings-table-body">
+                                        <!-- Bookings will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            <div id="bookings-pagination"></div>
+                        </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Form Submissions Tab Content -->
+                            <div class="tab-pane fade" id="contacts-content" role="tabpanel">
+                                <!-- Action Buttons -->
+                                <div class="d-flex justify-content-end mb-3">
+                                    <button class="btn btn-primary btn-sm" onclick="refreshSubmissions()">
+                                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                                    </button>
+                                </div>
+
+                                <!-- No Submissions Message -->
+                                <div id="no-submissions" class="text-center py-5 d-none">
+                                    <i class="fas fa-inbox text-muted fa-3x mb-3"></i>
+                                    <h5 class="text-muted">No Submissions Yet</h5>
+                                    <p class="text-muted">Form submissions will appear here</p>
+                                </div>
+
+                                <!-- Submissions List -->
+                                <div id="submissions-list">
+                                    <!-- Submissions will be loaded here -->
+                                </div>
+
+                                <!-- Pagination -->
+                                <div id="pagination-controls" class="d-flex justify-content-between align-items-center mt-4">
+                                    <!-- Pagination will be added here -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -192,6 +354,8 @@
 
     <!-- Services -->
     <script src="js/google-forms-service.js"></script>
+    <script src="js/booking-forms-service.js"></script>
+    <script src="js/dashboard-booking-viewer.js"></script>
     <script src="js/email-service.js"></script>
     
     <script>
@@ -440,6 +604,13 @@
         // Initialize
         let dashboard;
 
+        // Switch between data views
+        function switchDataView(view) {
+            // This function is called when tabs are clicked
+            // Bootstrap handles the tab switching automatically
+            console.log('Switched to view:', view);
+        }
+
         async function refreshSubmissions() {
             const refreshBtn = document.querySelector('.card-header .btn-light');
             if (refreshBtn) {
@@ -456,7 +627,7 @@
         }
 
         // Start up
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             try {
                 console.log('Page loaded, initializing...');
                 
@@ -469,9 +640,20 @@
                 // Check authentication
                 checkAuth();
                 
+                // Initialize booking forms service
+                console.log('Initializing booking forms service...');
+                window.bookingFormsService = new BookingFormsService();
+                console.log('Booking forms service ready');
+                
                 console.log('Creating dashboard instance...');
                 dashboard = new RestaurantDashboard();
                 console.log('Dashboard initialized successfully');
+
+                // Initialize booking viewer
+                console.log('Creating booking viewer instance...');
+                window.bookingViewer = new DashboardBookingViewer();
+                await window.bookingViewer.init();
+                console.log('Booking viewer initialized successfully');
 
                 // Hide spinner after a short delay if it wasn't already hidden
                 setTimeout(() => {

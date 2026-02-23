@@ -16,19 +16,29 @@ class HeaderAuth {
 
     // Check if user is already logged in
     checkExistingLogin() {
+        const userData = localStorage.getItem('userData');
         const savedName = localStorage.getItem('userName');
         const savedEmail = localStorage.getItem('userEmail');
         const loginTime = localStorage.getItem('loginTime');
+        const authToken = localStorage.getItem('authToken');
         
-        if (savedName && savedEmail && loginTime) {
-            // Check if login is still valid (24 hours)
+        if ((userData || (savedName && savedEmail)) && loginTime && authToken) {
+            // Check if login is still valid (24 hours or remember me)
             const loginDate = new Date(loginTime);
             const now = new Date();
             const hoursDiff = (now - loginDate) / (1000 * 60 * 60);
+            const rememberMe = localStorage.getItem('rememberMe') === 'true';
             
-            if (hoursDiff < 24) {
-                this.userName = savedName;
-                this.userEmail = savedEmail;
+            if (rememberMe || hoursDiff < 24) {
+                // Get user data from either source
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    this.userName = user.name;
+                    this.userEmail = user.email;
+                } else {
+                    this.userName = savedName;
+                    this.userEmail = savedEmail;
+                }
                 this.showLoggedInState();
                 return true;
             } else {
@@ -142,11 +152,13 @@ class HeaderAuth {
     }
 
     logout() {
-        // Clear all stored data
+        // Clear all stored data (both old and new auth systems)
+        localStorage.removeItem('userData');
         localStorage.removeItem('userName');
         localStorage.removeItem('userEmail');
         localStorage.removeItem('loginTime');
         localStorage.removeItem('authToken');
+        localStorage.removeItem('rememberMe');
         
         // Reset state
         this.userName = '';
